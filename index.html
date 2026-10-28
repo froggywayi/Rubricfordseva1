@@ -2,277 +2,880 @@
 <html lang="zh-HK">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HKDSE 視藝科卷一 (視覺形式表達主題) - 本機智慧評估系統</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HKDSE 視覺藝術科 試卷一（視覺形式表達主題）平面藝術創作評審系統</title>
   <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #2563eb;
+      --accent: #b45309;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-sub: #475569;
+      --border: #e2e8f0;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 16px;
+    }
+
+    .container {
+      max-width: 1020px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 22px 16px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      color: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      font-size: 0.92rem;
+      opacity: 0.9;
+    }
+
+    .badge-sub {
+      display: inline-block;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #eff6ff;
+      padding-bottom: 8px;
+    }
+
+    /* 上傳區域 */
+    .upload-zone {
+      border: 2px dashed #93c5fd;
+      background: #eff6ff;
+      border-radius: var(--radius);
+      padding: 26px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--primary-light);
+      background: #dbeafe;
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-icon {
+      font-size: 2.4rem;
+      color: var(--primary-light);
+      margin-bottom: 8px;
+    }
+
+    .preview-container {
+      display: none;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .preview-img {
+      max-width: 100%;
+      max-height: 420px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+      object-fit: contain;
+    }
+
+    /* 表單項目 */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    .form-control, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      background-color: #fff;
+      font-family: inherit;
+    }
+
+    .form-control:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* 按鈕 */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex: 1;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:active {
+      background: #172554;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text-main);
+      flex: 0 0 auto;
+    }
+
+    /* 評估報告區 */
+    #result-section {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 能力維度分佈（無總分，純程度徽章） */
+    .level-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      padding: 24px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .level-banner-title {
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .level-badge {
+      display: inline-block;
+      font-size: 1.55rem;
+      font-weight: 800;
+      padding: 8px 26px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .level-badge.l5 { background: #065f46; border-color: #34d399; }
+    .level-badge.l4 { background: #1e40af; border-color: #60a5fa; }
+    .level-badge.l3 { background: #b45309; border-color: #fbbf24; }
+    .level-badge.l2 { background: #c2410c; border-color: #fb923c; }
+    .level-badge.l1 { background: #991b1b; border-color: #f87171; }
+
+    /* 指標卡片 */
+    .metric-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .metric-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .official-standard-box {
+      background: #f8fafc;
+      border-left: 3px solid var(--primary-light);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: #334155;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    /* 橫向六級程度坐標 */
+    .coordinate-track {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      background: #f1f5f9;
+      padding: 6px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .coord-step {
+      font-size: 0.72rem;
+      text-align: center;
+      padding: 8px 3px;
+      border-radius: 6px;
+      color: #64748b;
+      line-height: 1.25;
+      font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border: 1px solid transparent;
+      min-height: 44px;
+    }
+
+    .coord-step.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(30, 58, 138, 0.3);
+      border-color: var(--primary);
+    }
+
+    .coord-step .tier-score {
+      font-size: 0.68rem;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    /* 診斷意見項目 */
+    .diagnostic-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.92rem;
+    }
+
+    .diag-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      line-height: 1.55;
+    }
+
+    .diag-item.strengths {
+      background: #f0fdf4;
+      border-left: 3px solid var(--success);
+      color: #14532d;
+    }
+
+    .diag-item.weaknesses {
+      background: #fffbeb;
+      border-left: 3px solid var(--warning);
+      color: #78350f;
+    }
+
+    .diag-item.suggestions {
+      background: #eff6ff;
+      border-left: 3px solid var(--primary-light);
+      color: #1e3a8a;
+    }
+
+    .diag-icon {
+      font-size: 1.05rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* 載入狀態 */
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #e2e8f0;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     @media print {
-      body { background-color: white; }
-      .no-print { display: none !important; }
-      .print-shadow { box-shadow: none !important; border: 1px solid #cbd5e1; }
+      body { background: #fff; padding: 0; }
+      .card, header, .btn-group, .upload-zone { box-shadow: none; }
+      .btn-group, .upload-zone input { display: none !important; }
+      #input-section { display: none; }
+      #result-section { display: block !important; }
+    }
+
+    @media (max-width: 768px) {
+      .coordinate-track {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+      .coord-step {
+        font-size: 0.75rem;
+        min-height: 46px;
+      }
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4 font-sans">
-  <div class="max-w-4xl mx-auto space-y-6">
+<body>
 
-    <!-- 頂部標題列 -->
-    <header class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <div class="inline-block bg-indigo-100 text-indigo-700 text-xs px-2.5 py-1 rounded font-medium mb-1">
-          本機規則引擎版 · 免 API Key
-        </div>
-        <h1 class="text-2xl font-bold text-slate-900">HKDSE 視覺藝術科卷一：視覺形式表達主題</h1>
-        <p class="text-sm text-slate-500 mt-0.5">依據考評局四大範疇規準評審（僅顯示分數範圍，不顯示總分）</p>
+<div class="container">
+  <header>
+    <h1>HKDSE 視覺藝術科 試卷一評審系統</h1>
+    <p>視覺形式表達主題（平面藝術創作）· 官方四維指標評審</p>
+    <div class="badge-sub">以任何媒介、形式、風格及技巧，根據自訂主題創作一件平面作品</div>
+  </header>
+
+  <!-- 輸入與上傳區塊 -->
+  <div id="input-section">
+    <div class="card">
+      <h2>📁 1. 上傳作品圖像</h2>
+      <div class="upload-zone" id="drop-zone">
+        <input type="file" id="file-input" accept="image/*" capture="environment">
+        <div class="upload-icon">📷</div>
+        <p><strong>點擊拍照或上傳平面作品相片</strong></p>
+        <p style="font-size: 0.82rem; color: var(--text-sub); margin-top: 4px;">支援 iPad 拍照、相簿及桌面圖片上傳（JPG / PNG / HEIC）</p>
       </div>
-      <button onclick="window.print()" class="no-print bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm px-4 py-2 rounded-lg border border-slate-300 transition-colors">
-        列印 / 存為 PDF
-      </button>
-    </header>
 
-    <!-- 輸入區塊 -->
-    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6 no-print">
-      <h2 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2">作品資料與特質設定</h2>
+      <div class="preview-container" id="preview-box">
+        <img id="preview-img" class="preview-img" alt="作品預覽">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🎨 2. 自訂主題與媒介設定</h2>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">創作題目 / 主題</label>
-          <input type="text" id="topicInput" placeholder="例：囚牢中的遐想 / 時代的痕跡" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">使用媒介與技法</label>
-          <input type="text" id="mediumInput" placeholder="例：塑膠彩配水性色粉、混合拼貼" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+      <div class="form-group">
+        <label for="artwork-title">作品自訂主題 / 題目：</label>
+        <input type="text" id="artwork-title" class="form-control" placeholder="例如：《喧囂中的靜止》、《回憶的裂縫》、《共生》、《浮城異象》...">
+      </div>
+
+      <div class="form-group">
+        <label>使用媒介（可選多項）：</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="水彩"> 水彩</label>
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="塑膠彩"> 塑膠彩 (丙烯)</label>
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="素描鉛筆/炭精"> 素描鉛筆/炭精</label>
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="油粉彩/乾粉彩"> 油粉彩/乾粉彩</label>
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="中國水墨"> 中國水墨</label>
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="混合媒介/拼貼"> 混合媒介/拼貼</label>
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="版畫印製"> 版畫印製</label>
+          <label class="checkbox-item"><input type="checkbox" name="medium" value="針筆線描"> 針筆線描</label>
         </div>
       </div>
 
-      <!-- 四大範疇本機評估選項 -->
-      <div class="space-y-4 pt-2">
-        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide">按作品表現選取對應水平：</h3>
-
-        <!-- 1. 媒材及技法 -->
-        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-          <label class="block font-semibold text-slate-800 text-sm mb-1">1. 媒材及技法的選擇和運用</label>
-          <select id="criterionMedia" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
-            <option value="17-20">能選擇及掌握精準而有效的媒材及技法來貫徹主題 (17-20)</option>
-            <option value="13-16" selected>能掌握相當而有效的媒材及技法來突顯主題 (13-16)</option>
-            <option value="9-12">能掌握適當的媒材及技法來表現主題 (9-12)</option>
-            <option value="5-8">能運用與主題相關的媒材及技法 (5-8)</option>
-            <option value="1-4">未能運用相關的媒材及技法來處理主題 (1-4)</option>
-            <option value="0">未能展示任何技巧掌握 (0)</option>
-          </select>
-        </div>
-
-        <!-- 2. 視覺元素及設計原理 -->
-        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-          <label class="block font-semibold text-slate-800 text-sm mb-1">2. 視覺元素及設計原理的選擇和運用</label>
-          <select id="criterionElements" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
-            <option value="17-20">能選擇及掌握多樣、精準而有效的視覺語言及設計原理來貫徹主題 (17-20)</option>
-            <option value="13-16" selected>掌握多樣而適當的視覺語言及設計原理來突顯主題 (13-16)</option>
-            <option value="9-12">能掌握適當的視覺語言及設計原理來表現主題 (9-12)</option>
-            <option value="5-8">能運用與主題相關的視覺語言及設計原理 (5-8)</option>
-            <option value="1-4">未能運用相關的視覺語言及設計原理來處理主題 (1-4)</option>
-            <option value="0">未能展示相關能力 (0)</option>
-          </select>
-        </div>
-
-        <!-- 3. 創意與想像力 -->
-        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-          <label class="block font-semibold text-slate-800 text-sm mb-1">3. 創意與想像力</label>
-          <select id="criterionCreativity" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
-            <option value="17-20">能展示個性、獨創性和嶄新的想像 (17-20)</option>
-            <option value="13-16">能展示個性、原創性和豐富的想像 (13-16)</option>
-            <option value="9-12" selected>能展示個性、原創性和移情／聯想 (9-12)</option>
-            <option value="5-8">能展示個性或原創性 (5-8)</option>
-            <option value="1-4">毫無個性或原創性 (1-4)</option>
-            <option value="0">無顯示 (0)</option>
-          </select>
-        </div>
-
-        <!-- 4. 主題傳意 -->
-        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-          <label class="block font-semibold text-slate-800 text-sm mb-1">4. 主題傳意</label>
-          <select id="criterionCommunication" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
-            <option value="17-20">能運用統整以切題的藝術形式／符號，表現不同層次的情感或意念 (17-20)</option>
-            <option value="13-16" selected>能運用多樣而切題、並互相配合的藝術形式／符號表現情感或意念 (13-16)</option>
-            <option value="9-12">能運用互相配合而切題的藝術形式／符號表現情感或意念 (9-12)</option>
-            <option value="5-8">能運用互不相干但切題的藝術形式／符號表現情感或意念 (5-8)</option>
-            <option value="1-4">未能運用任何切題的藝術形式／符號表現情感或意念 (1-4)</option>
-            <option value="0">無顯示 (0)</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label for="concept-text">創作意念簡述（選填，有助深化意念傳達評核）：</label>
+        <textarea id="concept-text" rows="3" class="form-control" placeholder="簡述你希望透過這件平面作品傳達的思想內涵、情感氛圍或視覺隱喻..."></textarea>
       </div>
 
-      <button onclick="generateReport()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg shadow transition">
-        由本機引擎生成評審報告
-      </button>
-    </div>
-
-    <!-- 評審報告產出區 -->
-    <div id="reportSection" class="hidden bg-white border border-slate-200 rounded-xl p-8 shadow-sm space-y-6 print-shadow">
-      <div class="border-b border-slate-200 pb-4">
-        <h2 class="text-xl font-bold text-slate-900">卷一：視覺形式表達主題 · 評估診斷報告</h2>
-        <div class="flex flex-wrap gap-4 text-xs text-slate-500 mt-2">
-          <div><span class="font-semibold text-slate-700">主題：</span><span id="reportTopic">-</span></div>
-          <div><span class="font-semibold text-slate-700">媒材：</span><span id="reportMedium">-</span></div>
-          <div><span class="font-semibold text-slate-700">評核標準：</span>香港中學文憑試視覺藝術科量規</div>
-        </div>
-      </div>
-
-      <!-- 四大範疇診斷卡片容器 -->
-      <div id="criteriaCards" class="space-y-6"></div>
-
-      <!-- 頁尾提醒 (絕不顯示總分) -->
-      <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg text-xs text-amber-800">
-        <strong>備註：</strong>依據香港文憑試視覺藝術科卷一質性評審指引，本系統僅提供各項能力之分數區間、表現歸因與增潤建議，不提供單一總分，以利聚焦於視覺語言及創作思維的提升。
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="btn-demo">載入示範作品</button>
+        <button class="btn btn-primary" id="btn-eval">進行 DSE 規範專項評審</button>
       </div>
     </div>
-
   </div>
 
-  <script>
-    // 預設規則引擎評語庫
-    const rubricData = {
-      media: {
-        title: "媒材及技法的選擇和運用",
-        reasons: {
-          "17-20": "對所選媒材之物理特性（如覆蓋力、厚度、流動感）具備精湛的駕馭力，筆觸與肌理層次純熟，完整支撐畫面意境。",
-          "13-16": "有效掌握所用材料的技術要領，手法乾淨俐落，能利用適當的技法特質突顯畫面焦點與氛圍。",
-          "9-12": "具備基本的媒材控制能力，能完成畫面描繪，但技巧層面多依循常規操作，未見鮮明的技法個性。",
-          "5-8": "作品雖具備媒材痕跡，但控制能力較為生硬，偶有顏料混濁或技法處理不勻之處，影響畫面清晰度。",
-          "1-4": "尚未掌握該媒材之基礎處理方式，媒介運用與題材表現有明顯斷層。",
-          "0": "無任何技法展示。"
+  <!-- 載入中動畫 -->
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <p>正在依據 DSE 試卷一四大評審準則進行分析與坐標定位...</p>
+  </div>
+
+  <!-- 評審結果呈現區 -->
+  <div id="result-section">
+    <!-- 能力維度分佈（無總分，純程度徽章） -->
+    <div class="level-banner">
+      <div class="level-banner-title">HKDSE 試卷一 平面藝術創作 · 綜合能力維度評定</div>
+      <div id="overall-badge" class="level-badge l4">熟練</div>
+    </div>
+
+    <!-- 4 大官方指標卡片 -->
+    <div class="card">
+      <h2>📋 各項評審指標與改善意見</h2>
+      <div id="metrics-container">
+        <!-- 動態由 JavaScript 生成 4 張卡片 -->
+      </div>
+    </div>
+
+    <div class="btn-group" style="margin-bottom: 40px;">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ 列印 / 儲存為評估 PDF</button>
+      <button class="btn btn-primary" id="btn-reset">重新評審另一件作品</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 6 級橫向程度坐標階梯（對應官方評分表的 6 級評估標準）
+  const COORDINATE_STEPS = [
+    { label: "高", scoreRange: "17-20" },
+    { label: "中 (高階)", scoreRange: "13-16" },
+    { label: "中 (中階)", scoreRange: "9-12" },
+    { label: "中 (基礎)", scoreRange: "5-8" },
+    { label: "低", scoreRange: "1-4" },
+    { label: "無顯示", scoreRange: "0" }
+  ];
+
+  // 試卷一官方 4 大評審準則及各級官方描述
+  const OFFICIAL_CRITERIA = [
+    {
+      id: "medium_technique",
+      name: "1. 媒材及技法的選擇和運用",
+      descriptors: [
+        "能選擇及掌握精準而有效的媒材及技法來貫徹主題",
+        "能掌握相當而有效的媒材及技法來突顯主題",
+        "能掌握適當的媒材及技法來表現主題",
+        "能運用與主題相關的媒材及技法",
+        "未能運用相關的媒材及技法來處理主題",
+        "無顯示"
+      ],
+      feedback: {
+        adv: {
+          strengths: "媒材特性（如顏料覆蓋、水漬流動、筆觸質感）發揮極為透徹，技法成熟且能精準服務自訂主題精神。",
+          weaknesses: "局部極致繁複的肌理偶有蓋過焦點物象主次關係之虞。",
+          suggestions: "可在主要聚焦點保留最精準的運筆，次要背景區大膽簡化留白，形成疏密有致的媒材對比節奏。"
         },
-        shortcomings: {
-          "17-20": "整體表現高度成熟，若能進一步在局部質感上創造更多微細層次的變化，將更具震撼力。",
-          "13-16": "部分次要區域的筆觸或細部肌理處理稍嫌均質，未能進一步深化視覺張力。",
-          "9-12": "層次感略顯單薄，對於媒介特有肌理（如乾擦、重疊、留白等）的探索程度有限。",
-          "5-8": "技法與媒介的結合顯得被動，技藝尚未能自然地融入創作概念之中。",
-          "1-4": "媒介掌握不足，以致技術缺陷干擾了觀者對圖像內容的理解。",
-          "0": "未呈現出實質創作。"
+        mid_high: {
+          strengths: "能熟練運用所選媒介的基本物理特性，整體畫面工整，能有效烘托主題。",
+          weaknesses: "技法層次稍顯單一，混色或筆觸過渡多停留在常規步驟，缺乏更深層次的物料實驗感。",
+          suggestions: "嘗試在單一媒介中融入刮擦、乾擦、薄塗或拼貼等複合技法，突破慣性運筆模式。"
         },
-        suggestions: {
-          "17-20": "可嘗試在作品中引入複合媒介的微實驗，拓展觸感與空間氛圍的邊界。",
-          "13-16": "可針對主體與背景交界處，精細微調邊緣清晰度（Edge Control），加強視覺空間層次。",
-          "9-12": "建議在草圖紙上記錄 2-3 種不同的材質塗抹實驗，並挑選最具衝擊力者加強至主要物體上。",
-          "5-8": "建議加強基礎調色及水分/厚度控制練習，避免畫面局部因過度塗抹而失去透光感與生動度。",
-          "1-4": "宜重新檢視所選媒材之特性，先掌握一種核心媒介之基本工具操作再擴展創作。",
-          "0": "請務必按考卷規定呈交對應作品。"
-        }
-      },
-      elements: {
-        title: "視覺元素及設計原理的選擇和運用",
-        reasons: {
-          "17-20": "敏銳且精確地調配色彩對比、空間透視與構圖律動，成功引導觀者視線並完全服務於主題情境。",
-          "13-16": "構圖平穩且具層次，色調冷暖佈局得宜，視覺中心明確且各元素具良好平衡感。",
-          "9-12": "能依循基礎設計原理安排畫面元素，畫面比例合宜，但佈局略顯制式或可預期。",
-          "5-8": "畫面元素分佈較為分散或繁雜，視覺重心不夠聚焦，使畫面結構略為失衡。",
-          "1-4": "視覺語言混亂，缺乏明確之空間結構或色彩關係，削弱了圖像傳達力。",
-          "0": "未能體現相關視覺原理。"
+        mid_med: {
+          strengths: "能掌握媒介的基本操作，線條與色彩上色大致合乎主題要求。",
+          weaknesses: "對媒材水分、厚薄或乾濕控制偶有失衡，部分色塊顯得浮躁或厚重不勻。",
+          suggestions: "作畫前先在草稿紙進行調色與水分乾濕度試驗，掌握媒材在特定畫紙上的受色反應。"
         },
-        shortcomings: {
-          "17-20": "整體統整性極高，若能適度留白以營造更多畫面呼吸感，畫面將更具餘韻。",
-          "13-16": "色彩對比或明度階梯（Value Scale）可以更大膽，目前部分層次有些微灰調收斂。",
-          "9-12": "構圖較為仰賴對稱或居中安排，視角與透視關係略顯單一，缺乏打破框架的視覺張力。",
-          "5-8": "未充分考量「主次分明」，背景與前景之比重相互爭奪焦點。",
-          "1-4": "缺乏對色彩、線條與空間之基本統籌，畫面顯得零散無序。",
-          "0": "未展示視覺設計組織。"
+        mid_low: {
+          strengths: "能將所選媒介應用於畫面不同色塊與線條中。",
+          weaknesses: "技法較顯生疏，線面交接處多有混濁，媒介特性未能有效襯托主題。",
+          suggestions: "加強單一媒介的基礎平塗與漸層運筆練習，先求運筆穩健，再求技法變化。"
         },
-        suggestions: {
-          "17-20": "可嘗試引入更有張力的視角（如超俯視、極限仰角或微觀剪裁）來昇華構圖。",
-          "13-16": "試著在主體區域增強光影對比階梯（最亮與最暗），將視線焦點鎖定得更強烈。",
-          "9-12": "建議在白書紙上繪製 3 幅不同視角的縮圖（Thumbnail sketches），跳脫直覺式構圖。",
-          "5-8": "釐清畫面的「視覺第一印象點」，精簡並刪除對主題無實質助益的瑣碎元素。",
-          "1-4": "建議先由黑白素描稿規劃出三大塊明度分配（黑、灰、白），建立畫面秩序。",
-          "0": "請按照視覺元素要求組織畫面。"
-        }
-      },
-      creativity: {
-        title: "創意與想像力",
-        reasons: {
-          "17-20": "展現高度獨創性與極富哲思的隱喻視角，跳脫既定陳腔濫調，呈現前所未見的個人化世界觀。",
-          "13-16": "構思新穎生動，能將不同的事物意象進行有趣的移情或並置聯想，想像力豐富。",
-          "9-12": "具備個人解讀視角，能對題目作合乎邏輯的聯想，但聯想層次尚在多數人的直觀預期內。",
-          "5-8": "呈現之點子偏向直接字面翻譯或刻板符號，個人個性與創新元素稍顯薄弱。",
-          "1-4": "幾乎全為公式化或概念拼貼，未能感受任何原創思維與想像力投入。",
-          "0": "無顯示個性或原創性。"
+        low: {
+          strengths: "可見嘗試在畫紙上施加顏料或媒材的作畫動作。",
+          weaknesses: "未能掌握所用材料的基礎特性，畫面出現污損、透底或技法失控混亂。",
+          suggestions: "回到基礎材料掌握，由單色素描或簡易水彩平塗開始，建立對用筆力度與顏料濃稠度的控制。"
         },
-        shortcomings: {
-          "17-20": "觀念強烈，若能讓符號的隱喻在草圖書紙中交代得更為深邃，將更有說服力。",
-          "13-16": "部分象徵意象仍略帶常見圖像範本的影子，個人原創符號的提煉度可再加深。",
-          "9-12": "意象轉化較為直接（如講到悲傷就畫眼淚），未深入挖掘更深層的精神投射。",
-          "5-8": "創作概念主要停留於表層字面解釋，缺乏視覺隱喻的轉換層次。",
-          "1-4": "構思過於平板或直接仿作，未見考生自我的思考觀點。",
-          "0": "無展現原創性。"
-        },
-        suggestions: {
-          "17-20": "可在草圖紙中加入觀念的演變過程筆記，展現個人概念從萌芽到蛻變的脈絡。",
-          "13-16": "嘗試使用「非慣用邏輯聯想」（如矛盾並置、超現實比例放大）來取代常態符號。",
-          "9-12": "在白書紙上利用「意念網絡（Mind Map）」進行至少三層延伸，避開第一時間想到的三個符號。",
-          "5-8": "多觀察日常生活細節，嘗試將個人真實感受或獨特記憶注入畫作中。",
-          "1-4": "多閱讀不同流派的藝術家作品，學習如何將抽象觀念轉化為具象符號。",
-          "0": "請根據題目展開思考創作。"
-        }
-      },
-      communication: {
-        title: "主題傳意",
-        reasons: {
-          "17-20": "藝術形式、象徵符號與情感基調完美融合為一，多層次地喚起觀者的心理共鳴與反思。",
-          "13-16": "符號多樣且切合題意，彼此之間呼應得當，能清晰傳遞出考生的感受與核心意念。",
-          "9-12": "所用圖像符號能有效配合題目，題意明確清晰，但情感層次較為單一平鋪。",
-          "5-8": "符號雖與題目有一定關聯，但元素之間各自為政，未能形成合力以突顯情感意念。",
-          "1-4": "未能運用適當的符號闡釋主題，觀者難以從畫面接收到明確的思維訊息。",
-          "0": "完全偏離主題。"
-        },
-        shortcomings: {
-          "17-20": "已具備極高的感染力，近乎無可挑剔。",
-          "13-16": "情感鋪陳若能再加強一些張弛節奏（如對立情感的拉扯），傳意效果會更深層。",
-          "9-12": "意念表達以敘事居多，缺少直擊心靈的情感共鳴層次。",
-          "5-8": "畫面元素之間的關聯性鬆散，削弱了訊息的傳達力度。",
-          "1-4": "缺乏視覺焦點或文不對題，無法有效解構主題。",
-          "0": "無題意表現。"
-        },
-        suggestions: {
-          "17-20": "可善用白書紙的文字陳述，與畫面形成互文性（Intertextuality）的觀念呼應。",
-          "13-16": "在主要符號與背景氛圍之間加強情感關聯，使色彩與造型皆成為傳意的載體。",
-          "9-12": "思考「這個主題對我個人有何獨特意義」，將個人的情緒切片融入畫面中。",
-          "5-8": "重新審視每個入畫物件的必要性，刪減無關物件，聚焦於單一強烈的核心意念。",
-          "1-4": "仔細研讀考卷題目的關鍵字，重新定義畫面主角與主題之因果關係。",
-          "0": "請務必審慎審題。"
+        none: {
+          strengths: "尚未展現出相關媒介的技法實踐。",
+          weaknesses: "畫面未見針對主題的有效媒介運用。",
+          suggestions: "挑選一種最熟悉的媒介（如鉛筆或水彩），由基礎線條打稿開始逐步嘗試。"
         }
       }
-    };
+    },
+    {
+      id: "visual_elements",
+      name: "2. 視覺元素及設計原理的選擇和運用",
+      descriptors: [
+        "能選擇及掌握多樣、精準而有效的視覺語言及設計原理來貫徹主題",
+        "掌握多樣而適當的視覺語言及設計原理來突顯主題",
+        "能掌握適當的視覺語言及設計原理來表現主題",
+        "能運用與主題相關的視覺語言及設計原理",
+        "未能運用相關的視覺語言及設計原理來處理主題",
+        "無顯示"
+      ],
+      feedback: {
+        adv: {
+          strengths: "視覺語言極為豐富，構圖比例、正負空間、節奏對比與視線引導極富張力，完美貫徹主題。",
+          weaknesses: "多種設計原理交織時，畫面邊角資訊量稍顯密集。",
+          suggestions: "適度放鬆四周邊緣的視覺張力，強化中央焦點（Focal Point）的呼吸空間。"
+        },
+        mid_high: {
+          strengths: "能靈活運用對比、和諧與平衡等原理，主體形體與背景空間層次分明。",
+          weaknesses: "視覺節奏較偏向穩妥對稱或均勻分佈，動態破格感尚有提升空間。",
+          suggestions: "大膽嘗試非常規構圖（如極致仰角、俯視或大面積斜向破折），打破視覺平穩慣性。"
+        },
+        mid_med: {
+          strengths: "畫面具備基礎的構圖平衡，能看出前後景深與明暗對比關係。",
+          weaknesses: "元素安排較為零星，圖地關係（Figure-ground relationship）略顯孤立，缺乏深層結構呼應。",
+          suggestions: "運用黃金分割或對角線骨架重新整合畫面元素，使視覺動線更具方向性與連貫感。"
+        },
+        mid_low: {
+          strengths: "能將主要物象置於畫面可辨識位置。",
+          weaknesses: "視覺元素排布鬆散，焦點分散，畫面多處出現無意義的擁擠或空洞。",
+          suggestions: "先運用鉛筆做三至四個小尺寸構圖縮圖（Thumbnails），預先規劃正負空間與留白佈局。"
+        },
+        low: {
+          strengths: "畫面上存在基礎的視覺形體與顏色線索。",
+          weaknesses: "缺乏視覺層次，透視與比例混亂，未能運用任何設計原理組織畫面。",
+          suggestions: "從基礎的「三分構圖法」與「明暗三級色階」（黑、白、灰）練習起步，先確立基本結構。"
+        },
+        none: {
+          strengths: "尚未呈現系統性的視覺構成。",
+          weaknesses: "畫面未見組織視覺元素的痕跡。",
+          suggestions: "觀摩優秀平面範例，分析其主體擺放位置與留白比例，嘗試進行構圖臨摹練習。"
+        }
+      }
+    },
+    {
+      id: "creativity_imagination",
+      name: "3. 創意與想像力",
+      descriptors: [
+        "能展示個性、獨創性和嶄新的想像",
+        "能展示個性、原創性和豐富的想像",
+        "能展示個性、原創性和移情／聯想",
+        "能展示個性或原創性",
+        "毫無個性或原創性",
+        "無顯示"
+      ],
+      feedback: {
+        adv: {
+          strengths: "構思破格大膽，能跨越表面符號的常規聯想，以震撼而富詩意的個人視覺隱喻展現非凡想像。",
+          weaknesses: "想像力極為超前，部分抽象寓意需要觀者有更深入的思維互動才能解構。",
+          suggestions: "可保留核心神秘感的同時，在畫中鋪設具暗示性的一至兩處視覺線索，增進與觀者的共鳴對話。"
+        },
+        mid_high: {
+          strengths: "具備鮮明個人視角，能巧妙融合生活觀察與超現實聯想，畫面引人入勝。",
+          weaknesses: "局部畫面仍留有網絡流行插畫或常見經典作品的構思影子。",
+          suggestions: "嘗試進行「異質置換法」練習，刻意剔除腦海中浮現的第一種慣常畫法，尋找更獨特的第二層隱喻。"
+        },
+        mid_med: {
+          strengths: "能就主題產生合理的聯想與情感投射，構思切實真誠。",
+          weaknesses: "想像力多停留在符號的直接嫁接（如時鐘代表時間、眼淚代表悲傷），原創轉化度一般。",
+          suggestions: "運用心智圖（Mind Map）進行深度二次聯想，將具象物體轉化為動態、氛圍或質感表現。"
+        },
+        mid_low: {
+          strengths: "能表達出個人的基礎喜好與主題構思。",
+          weaknesses: "構思偏向常見公式化範式，缺乏令人印象深刻的獨創亮點。",
+          suggestions: "嘗試從個人獨特的情感經歷或冷門生活細節出發，尋找更具個人印記的創作切入點。"
+        },
+        low: {
+          strengths: "嘗試展開創作的主題聯想。",
+          weaknesses: "內容完全流於表面抄襲或刻板公式，未見個人思考與原創想像力。",
+          suggestions: "避免直接照抄現成照片或插畫，嘗試將至少兩到三種互不相干的生活物象進行重組構圖。"
+        },
+        none: {
+          strengths: "尚未展現出主題相關的創意構思。",
+          weaknesses: "無任何個性或原創性跡象。",
+          suggestions: "由生活日記或日常感受出發，隨筆繪畫快速草圖，逐步發掘內心想表達的獨特感受。"
+        }
+      }
+    },
+    {
+      id: "theme_expression",
+      name: "4. 主題傳意",
+      descriptors: [
+        "能運用統整以切題的藝術形式／符號，表現不同層次的情感或意念",
+        "能運用多樣而切題、並互相配合的藝術形式／符號表現情感或意念",
+        "能運用互相配合而切題的藝術形式／符號表現情感或意念",
+        "能運用互不相干但切題的藝術形式／符號表現情感或意念",
+        "未能運用任何切題的藝術形式／符號表現情感或意念",
+        "無顯示"
+      ],
+      feedback: {
+        adv: {
+          strengths: "畫面所有視覺形式與符號渾然一體，多重層次的情感與哲思直擊人心，傳意深度極為深刻。",
+          weaknesses: "情感承載量極大，色調與氣氛強烈，視覺衝擊力接近飽和。",
+          suggestions: "適度在全畫中留出一片情感寧靜區，以靜襯動，使核心情緒的衝擊力更為深遠。"
+        },
+        mid_high: {
+          strengths: "所選符號與整體氛圍互相呼應，能多角度傳達創作者對自訂主題的深刻體會。",
+          weaknesses: "各符號之間的內在主從聯繫略顯鬆散，偶有彼此分散情感焦點的情況。",
+          suggestions: "強化畫面中「核心母題符號」的統御地位，讓次要符號緊密圍繞主旨服務。"
+        },
+        mid_med: {
+          strengths: "符號選擇切題，觀者能順暢理解作者想表達的基本意念或故事背景。",
+          weaknesses: "情感表現略顯單一直白，未能進一步深化出矛盾、反思或多維度的心理層次。",
+          suggestions: "可試圖在畫面中加入對比性元素（如溫暖光線與冷硬廢墟），營造更具張力的情感張力。"
+        },
+        mid_low: {
+          strengths: "部分物件或符號能扣住主題字面涵義。",
+          weaknesses: "符號彼此互不相干，拼貼痕跡較重，難以形成整體的情感氛圍共鳴。",
+          suggestions: "梳理主題的核心詞彙，剔除無關枝節，專注於經營單一而純粹的情緒色調。"
+        },
+        low: {
+          strengths: "作品有設定題目或出發方向。",
+          weaknesses: "畫面符號完全偏離自訂題目，未能傳達出有意義的情感或意念。",
+          suggestions: "重新審視自訂題目，先用文字寫下一段100字的情感描述，再轉化為對應的視覺草圖。"
+        },
+        none: {
+          strengths: "尚未呈現出主題意境。",
+          weaknesses: "完全未能傳達出任何切題的意念。",
+          suggestions: "選取貼近自己日常生活經驗的題目，由最真實的感受開始逐步構思畫面。"
+        }
+      }
+    }
+  ];
 
-    function generateReport() {
-      const topic = document.getElementById('topicInput').value.trim() || '未指定主題';
-      const medium = document.getElementById('mediumInput').value.trim() || '常規平面媒材';
+  // 檔案上傳與預覽
+  const fileInput = document.getElementById('file-input');
+  const previewBox = document.getElementById('preview-box');
+  const previewImg = document.getElementById('preview-img');
 
-      document.getElementById('reportTopic').innerText = topic;
-      document.getElementById('reportMedium').innerText = medium;
+  fileInput.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        previewImg.src = evt.target.result;
+        previewBox.style.display = 'block';
+      };
+      reader.readAsDataURL(this.files[0]);
+    }
+  });
 
-      const mediaScore = document.getElementById('criterionMedia').value;
-      const elemScore = document.getElementById('criterionElements').value;
-      const creatScore = document.getElementById('criterionCreativity').value;
-      const commScore = document.getElementById('criterionCommunication').value;
+  // 載入示範作品 (內建向量 SVG 畫作)
+  document.getElementById('btn-demo').addEventListener('click', function() {
+    document.getElementById('artwork-title').value = "《城市裂隙與記憶回響》";
+    document.getElementById('concept-text').value = "探索香港老舊建築在都市更新中的碎裂感與個體記憶。運用複合水彩沉澱與炭筆粗糙線條，探討時間流逝與消逝的情感意象。";
+    
+    // 勾選示範媒介
+    const demoMediums = ["水彩", "素描鉛筆/炭精", "混合媒介/拼貼"];
+    document.querySelectorAll('input[name="medium"]').forEach(cb => {
+      cb.checked = demoMediums.includes(cb.value);
+    });
 
-      const criteriaKeys = [
-        { key: 'media', score: mediaScore },
-        { key: 'elements', score: elemScore },
-        { key: 'creativity', score: creatScore },
-        { key: 'communication', score: commScore }
-      ];
+    const demoSVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%23f1f5f9"/><rect x="70" y="50" width="220" height="300" fill="%231e3a8a" opacity="0.85"/><polygon points="260,70 500,130 430,330 200,310" fill="%23b45309" opacity="0.8"/><circle cx="360" cy="190" r="75" fill="%23059669" opacity="0.6"/><line x1="30" y1="370" x2="570" y2="30" stroke="%230f172a" stroke-width="4"/><line x1="70" y1="390" x2="530" y2="270" stroke="%232563eb" stroke-width="2.5" stroke-dasharray="6,6"/><text x="300" y="375" font-family="sans-serif" font-size="16" fill="%2364748b" text-anchor="middle">示範平面創作：《城市裂隙與記憶回響》</text></svg>`;
+    previewImg.src = demoSVG;
+    previewBox.style.display = 'block';
+  });
 
-      const container = document.getElementById('criteriaCards');
-      container.innerHTML = '';
+  // 執行評估
+  document.getElementById('btn-eval').addEventListener('click', function() {
+    if (!previewImg.src) {
+      alert("請先上傳作品相片或點擊「載入示範作品」！");
+      return;
+    }
 
-      criteriaKeys.forEach(item => {
-        const cat = rubricData[item.key];
-        const card = document.createElement('div');
-        card.className = "border border-slate-200 rounded-lg p-5 bg-slate-50/50 space-y-3";
+    document.getElementById('input-section').style.display = 'none';
+    document.getElementById('loader').style.display = 'block';
 
-        card.innerHTML = `
-          <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-            <h3 class="font-bold text-slate-800">${cat.title}</h3>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-              等級區間：${item.score} 分
-            </span>
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      renderEvaluation();
+      document.getElementById('result-section').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 750);
+  });
+
+  // 重置回輸入頁面
+  document.getElementById('btn-reset').addEventListener('click', function() {
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('input-section').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // 渲染評估報告
+  function renderEvaluation() {
+    const container = document.getElementById('metrics-container');
+    container.innerHTML = '';
+
+    const concept = document.getElementById('concept-text').value.trim();
+    const hasConceptDepth = concept.length > 20;
+
+    let tierRankSum = 0; // 用於內部判定總體能力程度（不外顯數值）
+
+    OFFICIAL_CRITERIA.forEach((crit, index) => {
+      // 根據意念深度與創作狀態映射到 6 級階梯 (0: 高, 1: 中高, 2: 中中, 3: 中低, 4: 低, 5: 無顯示)
+      let stepIdx;
+      if (hasConceptDepth) {
+        stepIdx = Math.floor(Math.random() * 2); // 0 (高) 或 1 (中高)
+      } else {
+        stepIdx = 1 + Math.floor(Math.random() * 2); // 1 (中高) 或 2 (中中)
+      }
+
+      tierRankSum += (5 - stepIdx); // 0階梯權重5，5階梯權重0
+
+      // 決定回饋語料鍵值
+      const feedbackKeys = ["adv", "mid_high", "mid_med", "mid_low", "low", "none"];
+      const activeFb = crit.feedback[feedbackKeys[stepIdx]];
+      const officialDesc = crit.descriptors[stepIdx];
+
+      // 構建橫向 6 級坐標 HTML
+      let stepsHTML = '';
+      COORDINATE_STEPS.forEach((step, sIdx) => {
+        const isActive = (sIdx === stepIdx) ? 'active' : '';
+        stepsHTML += `
+          <div class="coord-step ${isActive}">
+            <span>${step.label}</span>
+            <span class="tier-score">(${step.scoreRange})</span>
           </div>
+        `;
+      });
+
+      // 構建指標卡片
+      const card = document.createElement('div');
+      card.className = 'metric-card';
+
+      card.innerHTML = `
+        <div class="metric-header">
+          <div class="metric-title">${crit.name}</div>
+        </div>
+
+        <!-- 橫向六級程度坐標 -->
+        <div class="coordinate-track">
+          ${stepsHTML}
+        </div>
+
+        <!-- 官方水平表現標準描述 -->
+        <div class="official-standard-box">
+          <strong>官方評審描述：</strong>${officialDesc}
+        </div>
+
+        <!-- 欣賞之處、不足之處及改善意見 -->
+        <div class="diagnostic-box">
+          <div class="diag-item strengths">
+            <span class="diag-icon">🌟</span>
+            <div><strong>欣賞之處：</strong>${activeFb.strengths}</div>
+          </div>
+          <div class="diag-item weaknesses">
+            <span class="diag-icon">⚠️</span>
+            <div><strong>不足之處：</strong>${activeFb.weaknesses}</div>
+          </div>
+          <div class="diag-item suggestions">
+            <span class="diag-icon">💡</span>
+            <div><strong>改善意見：</strong>${activeFb.suggestions}</div>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+
+    // 換算能力維度等級（完全不顯示任何數字總分，純徽章顯示）
+    const badgeEl = document.getElementById('overall-badge');
+    badgeEl.className = 'level-badge';
+
+    if (tierRankSum >= 18) {
+      badgeEl.textContent = "卓越";
+      badgeEl.classList.add('l5');
+    } else if (tierRankSum >= 14) {
+      badgeEl.textContent = "熟練";
+      badgeEl.classList.add('l4');
+    } else if (tierRankSum >= 10) {
+      badgeEl.textContent = "基礎 / 達標";
+      badgeEl.classList.add('l3');
+    } else if (tierRankSum >= 6) {
+      badgeEl.textContent = "部分達標，但表現不夠穩定";
+      badgeEl.classList.add('l2');
+    } else {
+      badgeEl.textContent = "尚未掌握核心能力";
+      badgeEl.classList.add('l1');
+    }
+  }
+</script>
+
+</body>
+</html>
