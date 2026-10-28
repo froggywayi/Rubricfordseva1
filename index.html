@@ -42,7 +42,7 @@
     }
 
     .container {
-      max-width: 960px;
+      max-width: 1040px;
       margin: 0 auto;
     }
 
@@ -267,23 +267,92 @@
     }
 
     .student-meta-summary {
-      background: #f1f5f9;
+      background: #f8fafc;
       border-radius: 8px;
       padding: 14px 18px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       display: flex;
       flex-wrap: wrap;
-      gap: 18px;
-      font-size: 0.95rem;
+      gap: 20px;
+      font-size: 0.98rem;
       border-left: 4px solid var(--primary);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .student-meta-summary span {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
 
+    /* 官方評分準則參考列表 (新增於紅箭咀位置) */
+    .rubric-reference-box {
+      margin-bottom: 24px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .rubric-header-bar {
+      background: #f1f5f9;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rubric-table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.82rem;
+      min-width: 720px;
+    }
+
+    .rubric-table th, .rubric-table td {
+      border: 1px solid #cbd5e1;
+      padding: 10px 10px;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .rubric-table th {
+      background-color: #f8fafc;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    .rubric-table .th-score {
+      background-color: #eff6ff;
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .rubric-table .col-crit {
+      font-weight: 700;
+      background-color: #fbfcfe;
+      width: 16%;
+      min-width: 120px;
+      color: var(--primary);
+    }
+
+    /* 指標診斷卡片 */
     .criterion-card {
       background: #fff;
       border: 1px solid var(--border);
@@ -373,10 +442,10 @@
     /* 列印樣式適配 */
     @media print {
       body { background: #fff; padding: 0; }
-      .card, header, .btn-group, .upload-zone { box-shadow: none; border-color: #cbd5e1; }
+      .card, header, .btn-group, .upload-zone, .rubric-reference-box { box-shadow: none; border-color: #cbd5e1; }
       .btn-group, .upload-zone input, #input-section { display: none !important; }
       #result-section { display: block !important; }
-      .criterion-card { page-break-inside: avoid; }
+      .criterion-card, .rubric-reference-box { page-break-inside: avoid; }
     }
   </style>
 </head>
@@ -401,11 +470,11 @@
         </div>
         <div class="form-group">
           <label for="student-class">班別：</label>
-          <input type="text" id="student-class" class="form-control" placeholder="例如：6A">
+          <input type="text" id="student-class" class="form-control" placeholder="例如：4C">
         </div>
         <div class="form-group">
           <label for="student-number">學號：</label>
-          <input type="text" id="student-number" class="form-control" placeholder="例如：15">
+          <input type="text" id="student-number" class="form-control" placeholder="例如：18">
         </div>
       </div>
     </div>
@@ -431,7 +500,7 @@
       
       <div class="form-group">
         <label for="artwork-title">作品自訂主題 / 題目：</label>
-        <input type="text" id="artwork-title" class="form-control" placeholder="例如：《喧囂中的靜止》、《回憶的裂縫》、《共生》、《城市殘影》...">
+        <input type="text" id="artwork-title" class="form-control" placeholder="例如：無意打開盒子，發現讓我心跳加速的事物...">
       </div>
 
       <div class="form-group">
@@ -463,22 +532,84 @@
   <!-- 載入中動畫 -->
   <div class="loader" id="loader">
     <div class="spinner"></div>
-    <p>正在就媒材（漸層、筆觸、厚薄）、視覺原理、創意及主題傳意進行專項分析...</p>
+    <p>正在載入官方評分準則並就媒材（漸層、筆觸、厚薄）、視覺原理、創意及主題傳意進行專項分析...</p>
   </div>
 
-  <!-- 評審結果呈現區（無總體表現、無分數等級、無坐標） -->
+  <!-- 評審結果呈現區 -->
   <div id="result-section">
     <div class="card">
       <h2>📋 各項評審指標與改善意見</h2>
 
       <!-- 學生資料摘要列 -->
       <div class="student-meta-summary" id="meta-summary-bar">
-        <!-- 動態帶入學生姓名、班別、學號與作品名稱 -->
+        <!-- 動態帶入學生姓名、班別、學號與作品題目 -->
       </div>
 
-      <div id="metrics-container">
-        <!-- 動態由 JavaScript 生成 4 張純回饋卡片 -->
+      <!-- 官方評分準則列表 (紅箭咀位置) -->
+      <div class="rubric-reference-box">
+        <div class="rubric-header-bar">
+          <span>📐 香港中學文憑試 視覺藝術科（試卷一 平面藝術創作）官方評分準則一覽表</span>
+        </div>
+        <div class="rubric-table-responsive">
+          <table class="rubric-table">
+            <thead>
+              <tr>
+                <th rowspan="2" class="col-crit">評分準則</th>
+                <th>高</th>
+                <th colspan="3">中</th>
+                <th>低</th>
+                <th>無顯示</th>
+              </tr>
+              <tr>
+                <th class="th-score">17-20</th>
+                <th class="th-score">13-16</th>
+                <th class="th-score">9-12</th>
+                <th class="th-score">5-8</th>
+                <th class="th-score">1-4</th>
+                <th class="th-score">0</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-crit">媒材及技法的選擇和運用</td>
+                <td>能選擇及掌握精準而有效的媒材及技法來貫徹主題</td>
+                <td>能掌握相當而有效的媒材及技法來突顯主題</td>
+                <td>能掌握適當的媒材及技法來表現主題</td>
+                <td>能運用與主題相關的媒材及技法</td>
+                <td>未能運用相關的媒材及技法來處理主題</td>
+                <td rowspan="4" style="text-align: center; vertical-align: middle; color:#94a3b8; font-weight:600;">0</td>
+              </tr>
+              <tr>
+                <td class="col-crit">視覺元素及設計原理的選擇和運用</td>
+                <td>能選擇及掌握多樣、精準而有效的視覺語言及設計原理來貫徹主題</td>
+                <td>掌握多樣而適當的視覺語言及設計原理來突顯主題</td>
+                <td>能掌握適當的視覺語言及設計原理來表現主題</td>
+                <td>能運用與主題相關的視覺語言及設計原理</td>
+                <td>未能運用相關的視覺語言及設計原理來處理主題</td>
+              </tr>
+              <tr>
+                <td class="col-crit">創意與想像力</td>
+                <td>能展示個性、獨創性和嶄新的想像</td>
+                <td>能展示個性、原創性和豐富的想像</td>
+                <td>能展示個性、原創性和移情／聯想</td>
+                <td>能展示個性或原創性</td>
+                <td>毫無個性或原創性</td>
+              </tr>
+              <tr>
+                <td class="col-crit">主題傳意</td>
+                <td>能運用統整以切題的藝術形式／符號，表現不同層次的情感或意念</td>
+                <td>能運用多樣而切題、並互相配合的藝術形式／符號表現情感或意念</td>
+                <td>能運用互相配合而切題的藝術形式／符號表現情感或意念</td>
+                <td>能運用互不相干但切題的藝術形式／符號表現情感或意念</td>
+                <td>未能運用任何切題的藝術形式／符號表現情感或意念</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <!-- 四大項純回饋診斷卡片 -->
+      <div id="metrics-container"></div>
     </div>
 
     <div class="btn-group" style="margin-bottom: 40px;">
@@ -489,8 +620,7 @@
 </div>
 
 <script>
-  // 四項官方指標專用評語庫
-  // 其中第 1 項「媒材及技法」特別針對「漸層、筆觸、厚薄」給予深度回饋
+  // 四項官方指標專屬回饋語料
   const CRITERIA_FEEDBACK = [
     {
       id: "medium_technique",
@@ -538,13 +668,13 @@
     }
   });
 
-  // 載入示範作品
+  // 載入示範作品 (帶入截圖中的示範資料)
   document.getElementById('btn-demo').addEventListener('click', function() {
-    document.getElementById('student-name').value = "陳小明";
-    document.getElementById('student-class').value = "6B";
-    document.getElementById('student-number').value = "08";
-    document.getElementById('artwork-title').value = "《浮城裂紋中的記憶迴響》";
-    document.getElementById('concept-text').value = "探討城市舊建築清拆與個體記憶消逝的矛盾。透過斑駁的顏料厚塗與漸層筆觸，營造時間流逝的斑駁感。";
+    document.getElementById('student-name').value = "吳嘉怡";
+    document.getElementById('student-class').value = "4C";
+    document.getElementById('student-number').value = "18";
+    document.getElementById('artwork-title').value = "無意打開盒子，發現讓我心跳加速的事物";
+    document.getElementById('concept-text').value = "作品描繪在昏暗房間內輕啟舊木盒時，內部湧現出發光的發條蝴蝶與童年記憶碎片，探討未知、驚喜與時間流逝帶來的悸動。";
 
     // 勾選媒介
     const demoMediums = ["塑膠彩", "素描鉛筆/炭精", "混合媒介/拼貼"];
@@ -552,7 +682,7 @@
       cb.checked = demoMediums.includes(cb.value);
     });
 
-    const demoSVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%23f1f5f9"/><rect x="80" y="50" width="220" height="300" fill="%231e3a8a" opacity="0.85"/><polygon points="260,70 500,130 430,330 200,310" fill="%23b45309" opacity="0.8"/><circle cx="360" cy="190" r="75" fill="%23059669" opacity="0.6"/><line x1="30" y1="370" x2="570" y2="30" stroke="%230f172a" stroke-width="4"/><line x1="70" y1="390" x2="530" y2="270" stroke="%232563eb" stroke-width="2.5" stroke-dasharray="6,6"/><text x="300" y="375" font-family="sans-serif" font-size="16" fill="%2364748b" text-anchor="middle">示範平面創作：《浮城裂紋中的記憶迴響》</text></svg>`;
+    const demoSVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%23f1f5f9"/><rect x="80" y="50" width="220" height="300" fill="%231e3a8a" opacity="0.85"/><polygon points="260,70 500,130 430,330 200,310" fill="%23b45309" opacity="0.8"/><circle cx="360" cy="190" r="75" fill="%23059669" opacity="0.6"/><line x1="30" y1="370" x2="570" y2="30" stroke="%230f172a" stroke-width="4"/><line x1="70" y1="390" x2="530" y2="270" stroke="%232563eb" stroke-width="2.5" stroke-dasharray="6,6"/><text x="300" y="375" font-family="sans-serif" font-size="16" fill="%2364748b" text-anchor="middle">示範作品：《無意打開盒子，發現讓我心跳加速的事物》</text></svg>`;
     previewImg.src = demoSVG;
     previewBox.style.display = 'block';
   });
@@ -582,9 +712,9 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // 渲染純指標診斷結果
+  // 渲染評核報告
   function renderEvaluation() {
-    // 渲染學生資訊橫列
+    // 渲染學生資料摘要橫列
     const name = document.getElementById('student-name').value.trim() || "未填寫";
     const sClass = document.getElementById('student-class').value.trim() || "-";
     const sNum = document.getElementById('student-number').value.trim() || "-";
@@ -598,7 +728,7 @@
       <span><strong>作品題目：</strong>${title}</span>
     `;
 
-    // 渲染 4 項純回饋卡片（不含任何等級與分數）
+    // 渲染 4 項純回饋診斷卡片
     const container = document.getElementById('metrics-container');
     container.innerHTML = '';
 
