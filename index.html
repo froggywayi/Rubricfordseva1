@@ -3,892 +3,276 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HKDSE 視覺藝術科 卷一（視覺形式表達主題）作品智能評審系統</title>
-  <!-- Tailwind CSS -->
+  <title>HKDSE 視藝科卷一 (視覺形式表達主題) - 本機智慧評估系統</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Phosphor Icons for elegant UI symbols -->
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap');
-    
-    body {
-      font-family: 'Noto Sans TC', sans-serif;
-      background-color: #f8fafc;
-      color: #1e293b;
-    }
-    
-    .serif-title {
-      font-family: 'Noto Serif TC', serif;
-    }
-
-    /* Print styles for export */
     @media print {
-      body {
-        background: #ffffff !important;
-        color: #000000 !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .print-shadow-none {
-        box-shadow: none !important;
-        border: 1px solid #cbd5e1 !important;
-      }
-      .break-inside-avoid {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
+      body { background-color: white; }
+      .no-print { display: none !important; }
+      .print-shadow { box-shadow: none !important; border: 1px solid #cbd5e1; }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+<body class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4 font-sans">
+  <div class="max-w-4xl mx-auto space-y-6">
 
-  <!-- Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-700 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-100">
-          <i class="ph ph-palette text-2xl"></i>
+    <!-- 頂部標題列 -->
+    <header class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <div class="inline-block bg-indigo-100 text-indigo-700 text-xs px-2.5 py-1 rounded font-medium mb-1">
+          本機規則引擎版 · 免 API Key
+        </div>
+        <h1 class="text-2xl font-bold text-slate-900">HKDSE 視覺藝術科卷一：視覺形式表達主題</h1>
+        <p class="text-sm text-slate-500 mt-0.5">依據考評局四大範疇規準評審（僅顯示分數範圍，不顯示總分）</p>
+      </div>
+      <button onclick="window.print()" class="no-print bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm px-4 py-2 rounded-lg border border-slate-300 transition-colors">
+        列印 / 存為 PDF
+      </button>
+    </header>
+
+    <!-- 輸入區塊 -->
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6 no-print">
+      <h2 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2">作品資料與特質設定</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">創作題目 / 主題</label>
+          <input type="text" id="topicInput" placeholder="例：囚牢中的遐想 / 時代的痕跡" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
         </div>
         <div>
-          <h1 class="text-lg font-bold text-slate-800 leading-tight">HKDSE 視覺藝術科 卷一</h1>
-          <p class="text-xs text-slate-500 font-medium">視覺形式表達主題 · 智能評核與反思指導系統</p>
+          <label class="block text-sm font-medium text-slate-700 mb-1">使用媒介與技法</label>
+          <input type="text" id="mediumInput" placeholder="例：塑膠彩配水性色粉、混合拼貼" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
         </div>
       </div>
 
-      <!-- Action & Help -->
-      <div class="flex items-center space-x-2">
-        <button onclick="toggleRubricModal()" class="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center space-x-1.5">
-          <i class="ph ph-table text-base"></i>
-          <span>檢視評分規準量表</span>
-        </button>
-        <button onclick="loadSampleCase()" class="px-3 py-1.5 text-xs sm:text-sm font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors flex items-center space-x-1.5">
-          <i class="ph ph-sparkle text-base"></i>
-          <span>載入示範案例</span>
-        </button>
+      <!-- 四大範疇本機評估選項 -->
+      <div class="space-y-4 pt-2">
+        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide">按作品表現選取對應水平：</h3>
+
+        <!-- 1. 媒材及技法 -->
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <label class="block font-semibold text-slate-800 text-sm mb-1">1. 媒材及技法的選擇和運用</label>
+          <select id="criterionMedia" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
+            <option value="17-20">能選擇及掌握精準而有效的媒材及技法來貫徹主題 (17-20)</option>
+            <option value="13-16" selected>能掌握相當而有效的媒材及技法來突顯主題 (13-16)</option>
+            <option value="9-12">能掌握適當的媒材及技法來表現主題 (9-12)</option>
+            <option value="5-8">能運用與主題相關的媒材及技法 (5-8)</option>
+            <option value="1-4">未能運用相關的媒材及技法來處理主題 (1-4)</option>
+            <option value="0">未能展示任何技巧掌握 (0)</option>
+          </select>
+        </div>
+
+        <!-- 2. 視覺元素及設計原理 -->
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <label class="block font-semibold text-slate-800 text-sm mb-1">2. 視覺元素及設計原理的選擇和運用</label>
+          <select id="criterionElements" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
+            <option value="17-20">能選擇及掌握多樣、精準而有效的視覺語言及設計原理來貫徹主題 (17-20)</option>
+            <option value="13-16" selected>掌握多樣而適當的視覺語言及設計原理來突顯主題 (13-16)</option>
+            <option value="9-12">能掌握適當的視覺語言及設計原理來表現主題 (9-12)</option>
+            <option value="5-8">能運用與主題相關的視覺語言及設計原理 (5-8)</option>
+            <option value="1-4">未能運用相關的視覺語言及設計原理來處理主題 (1-4)</option>
+            <option value="0">未能展示相關能力 (0)</option>
+          </select>
+        </div>
+
+        <!-- 3. 創意與想像力 -->
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <label class="block font-semibold text-slate-800 text-sm mb-1">3. 創意與想像力</label>
+          <select id="criterionCreativity" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
+            <option value="17-20">能展示個性、獨創性和嶄新的想像 (17-20)</option>
+            <option value="13-16">能展示個性、原創性和豐富的想像 (13-16)</option>
+            <option value="9-12" selected>能展示個性、原創性和移情／聯想 (9-12)</option>
+            <option value="5-8">能展示個性或原創性 (5-8)</option>
+            <option value="1-4">毫無個性或原創性 (1-4)</option>
+            <option value="0">無顯示 (0)</option>
+          </select>
+        </div>
+
+        <!-- 4. 主題傳意 -->
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <label class="block font-semibold text-slate-800 text-sm mb-1">4. 主題傳意</label>
+          <select id="criterionCommunication" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500">
+            <option value="17-20">能運用統整以切題的藝術形式／符號，表現不同層次的情感或意念 (17-20)</option>
+            <option value="13-16" selected>能運用多樣而切題、並互相配合的藝術形式／符號表現情感或意念 (13-16)</option>
+            <option value="9-12">能運用互相配合而切題的藝術形式／符號表現情感或意念 (9-12)</option>
+            <option value="5-8">能運用互不相干但切題的藝術形式／符號表現情感或意念 (5-8)</option>
+            <option value="1-4">未能運用任何切題的藝術形式／符號表現情感或意念 (1-4)</option>
+            <option value="0">無顯示 (0)</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="generateReport()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg shadow transition">
+        由本機引擎生成評審報告
+      </button>
+    </div>
+
+    <!-- 評審報告產出區 -->
+    <div id="reportSection" class="hidden bg-white border border-slate-200 rounded-xl p-8 shadow-sm space-y-6 print-shadow">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 class="text-xl font-bold text-slate-900">卷一：視覺形式表達主題 · 評估診斷報告</h2>
+        <div class="flex flex-wrap gap-4 text-xs text-slate-500 mt-2">
+          <div><span class="font-semibold text-slate-700">主題：</span><span id="reportTopic">-</span></div>
+          <div><span class="font-semibold text-slate-700">媒材：</span><span id="reportMedium">-</span></div>
+          <div><span class="font-semibold text-slate-700">評核標準：</span>香港中學文憑試視覺藝術科量規</div>
+        </div>
+      </div>
+
+      <!-- 四大範疇診斷卡片容器 -->
+      <div id="criteriaCards" class="space-y-6"></div>
+
+      <!-- 頁尾提醒 (絕不顯示總分) -->
+      <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg text-xs text-amber-800">
+        <strong>備註：</strong>依據香港文憑試視覺藝術科卷一質性評審指引，本系統僅提供各項能力之分數區間、表現歸因與增潤建議，不提供單一總分，以利聚焦於視覺語言及創作思維的提升。
       </div>
     </div>
-  </header>
 
-  <!-- Main Content Layout -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-    
-    <!-- Top Alert / Configuration Bar -->
-    <div class="no-print mb-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="flex items-start space-x-3">
-          <div class="p-2 bg-amber-50 text-amber-600 rounded-lg mt-0.5">
-            <i class="ph ph-key text-xl"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-semibold text-slate-800">Gemini 視覺評審設定</h2>
-            <p class="text-xs text-slate-500">系統利用多模態視覺模型深度剖析作品構成、筆觸及媒材表現。可直接運行或自訂 API Key。</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-2 w-full md:w-auto">
-          <div class="relative flex-1 md:w-72">
-            <input type="password" id="apiKeyInput" placeholder="預設使用內置金鑰 (或填寫個人 Key)" class="w-full text-xs sm:text-sm pl-3 pr-9 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-            <button onclick="toggleKeyVisibility()" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600">
-              <i id="keyEyeIcon" class="ph ph-eye text-base"></i>
-            </button>
-          </div>
-          <button onclick="saveApiKey()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors whitespace-nowrap">
-            儲存
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- Left Column: Input and Upload form (5 cols) -->
-      <section class="lg:col-span-5 space-y-6 no-print">
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2 border-b border-slate-100 pb-3 mb-4">
-            <i class="ph ph-pencil-line text-indigo-600 text-xl"></i>
-            <span>考生作品提交資訊</span>
-          </h3>
-
-          <!-- Form Fields -->
-          <div class="space-y-4">
-            <div>
-              <label for="themeInput" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                創作題目 / 主題 <span class="text-rose-500">*</span>
-              </label>
-              <input type="text" id="themeInput" placeholder="例：寂靜、城市的脈搏、記憶的容器..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
-            </div>
-
-            <div>
-              <label for="statementInput" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                創作意念與簡介（草圖/筆記重點解說）
-              </label>
-              <textarea id="statementInput" rows="3" placeholder="請描述作品採用的概念、象徵意義、情感訴求或創作解說（建議填寫，有助更準確評定「主題傳意」範疇）..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"></textarea>
-            </div>
-
-            <!-- Upload Area -->
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                作品相片及草圖白書紙 <span class="text-rose-500">*</span>
-              </label>
-              <div id="dropzone" onclick="document.getElementById('fileInput').click()" class="cursor-pointer border-2 border-dashed border-slate-300 hover:border-indigo-400 bg-slate-50 hover:bg-indigo-50/30 rounded-2xl p-5 text-center transition-all flex flex-col items-center justify-center">
-                <input type="file" id="fileInput" accept="image/*" multiple class="hidden" onchange="handleFileSelect(event)">
-                <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-indigo-600 mb-2">
-                  <i class="ph ph-cloud-arrow-up text-2xl"></i>
-                </div>
-                <p class="text-sm font-medium text-slate-700">點擊上傳或將相片拖曳至此</p>
-                <p class="text-xs text-slate-400 mt-1">支援 JPG, PNG, WEBP（可同時上傳完成圖及草圖紙）</p>
-              </div>
-
-              <!-- Preview Grid -->
-              <div id="imagePreviewContainer" class="grid grid-cols-2 gap-3 mt-3 hidden">
-                <!-- Preview items will be injected here -->
-              </div>
-            </div>
-
-            <!-- Notice on Rules -->
-            <div class="bg-amber-50/80 border border-amber-200/60 rounded-xl p-3 text-xs text-amber-800 space-y-1">
-              <div class="font-semibold flex items-center space-x-1">
-                <i class="ph ph-info text-base"></i>
-                <span>HKDSE 卷一評分規範特別提示：</span>
-              </div>
-              <p>依據考試局規準，評分聚焦於 4 項核心範疇。本系統嚴格遵循規則，**只顯示表現等級之分數範圍**（例如 13-16 分），**不公佈單一分數及總分**，引導考生著重質性反思與改善。</p>
-            </div>
-
-            <!-- Submit Button -->
-            <button id="submitBtn" onclick="evaluateArtwork()" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center justify-center space-x-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-              <i class="ph ph-magnifying-glass-plus text-lg"></i>
-              <span>開始進行 DSE 規範專題目測評審</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 4 Assessment Domains Quick Card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm text-xs text-slate-600 space-y-3">
-          <h4 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
-            <i class="ph ph-scales text-indigo-600 text-base"></i>
-            <span>評核四大核心範疇</span>
-          </h4>
-          <ul class="space-y-2">
-            <li class="flex items-start space-x-2">
-              <span class="inline-block w-4 h-4 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold text-center leading-4 mt-0.5">1</span>
-              <div><strong class="text-slate-700">媒材及技法的選擇和運用：</strong>掌握與選用媒材之有效性、手感與貫徹度。</div>
-            </li>
-            <li class="flex items-start space-x-2">
-              <span class="inline-block w-4 h-4 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold text-center leading-4 mt-0.5">2</span>
-              <div><strong class="text-slate-700">視覺元素及設計原理的選擇和運用：</strong>線條、色彩、肌理、構圖、平衡、對比與節奏之調控。</div>
-            </li>
-            <li class="flex items-start space-x-2">
-              <span class="inline-block w-4 h-4 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold text-center leading-4 mt-0.5">3</span>
-              <div><strong class="text-slate-700">創意與想像力：</strong>個人獨特觀點、原創性、移情聯想與嶄新意象建構。</div>
-            </li>
-            <li class="flex items-start space-x-2">
-              <span class="inline-block w-4 h-4 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold text-center leading-4 mt-0.5">4</span>
-              <div><strong class="text-slate-700">主題傳意：</strong>藝術符號統整性、意念深淺層次與情意共鳴度。</div>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- Right Column: Evaluation Result Report (7 cols) -->
-      <section class="lg:col-span-7">
-        
-        <!-- Welcome / Empty State Placeholder -->
-        <div id="emptyState" class="bg-white border border-slate-200 rounded-3xl p-10 text-center shadow-sm">
-          <div class="max-w-md mx-auto space-y-4">
-            <div class="w-20 h-20 mx-auto rounded-3xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-              <i class="ph ph-paint-brush-broad text-4xl"></i>
-            </div>
-            <h3 class="serif-title text-xl font-bold text-slate-800">等待提交視覺藝術作品</h3>
-            <p class="text-sm text-slate-500 leading-relaxed">
-              請在左方輸入考卷主題、創作意念並上傳作品照片（可附上草圖白書紙）。系統將根據香港文憑試視覺藝術科評分規準，為四大範疇提供精準的表現等級範圍、得分優點、不足細節及具體的改善備試策略。
-            </p>
-            <div class="pt-2">
-              <button onclick="loadSampleCase()" class="inline-flex items-center space-x-2 text-indigo-600 hover:text-indigo-800 font-semibold text-sm bg-indigo-50/70 hover:bg-indigo-100/70 px-4 py-2.5 rounded-xl transition-all">
-                <i class="ph ph-play-circle text-lg"></i>
-                <span>立即試用示範案例分析</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loadingState" class="hidden bg-white border border-slate-200 rounded-3xl p-12 text-center shadow-sm">
-          <div class="flex flex-col items-center justify-center space-y-4">
-            <div class="relative w-16 h-16">
-              <div class="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-              <div class="absolute inset-0 flex items-center justify-center text-indigo-600">
-                <i class="ph ph-sparkle text-xl animate-pulse"></i>
-              </div>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800">AI 評審模型正在審視視覺形式與意念...</h3>
-            <p class="text-xs sm:text-sm text-slate-500 max-w-sm">正在深度分析作品的媒介筆觸、構圖原理、象徵意象與主題表現力，並對照 DSE 官方標準等級規準中...</p>
-            <div class="w-48 bg-slate-100 h-1.5 rounded-full overflow-hidden mt-2">
-              <div class="bg-indigo-600 h-full animate-[pulse_1.5s_ease-in-out_infinite] w-2/3"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Evaluation Report Container -->
-        <div id="reportContainer" class="hidden space-y-6">
-          
-          <!-- Report Header -->
-          <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm print-shadow-none">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
-              <div>
-                <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 mb-2">
-                  <i class="ph ph-seal-check text-sm"></i>
-                  <span>HKDSE 評量報告規範</span>
-                </span>
-                <h2 class="serif-title text-2xl font-bold text-slate-900" id="reportTitle">卷一作品評審診斷報告</h2>
-                <div class="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-500 mt-1">
-                  <span><strong>主題題目：</strong><span id="reportTheme" class="text-slate-700"></span></span>
-                  <span><strong>評審日期：</strong><span id="reportDate" class="text-slate-700"></span></span>
-                </div>
-              </div>
-
-              <!-- Print & Action Tools -->
-              <div class="flex items-center space-x-2 no-print">
-                <button onclick="window.print()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl flex items-center space-x-1.5 transition-colors">
-                  <i class="ph ph-printer text-base"></i>
-                  <span>列印 / 存為 PDF</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Rubrics Adherence Reminder -->
-            <div class="mt-4 flex items-center space-x-2 text-xs text-slate-500 bg-slate-50 rounded-xl px-4 py-2.5">
-              <i class="ph ph-shield-check text-emerald-600 text-base flex-shrink-0"></i>
-              <span>評分守則遵行：每項評分僅顯示考選規準之表現等級分數範圍（如 13-16 分），不提供具體單一分值及總分。</span>
-            </div>
-
-            <!-- Uploaded Work Thumbnails in Report -->
-            <div class="mt-5">
-              <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">送評作品與輔助草圖資料</h4>
-              <div id="reportThumbnails" class="flex flex-wrap gap-3"></div>
-            </div>
-
-            <!-- Overall Summary & Artistic Impression -->
-            <div class="mt-6 p-4 sm:p-5 bg-gradient-to-r from-indigo-50/70 to-blue-50/50 rounded-2xl border border-indigo-100">
-              <h4 class="text-sm font-bold text-indigo-950 flex items-center space-x-2 mb-2">
-                <i class="ph ph-chat-centered-text text-indigo-600 text-lg"></i>
-                <span>綜合評析與整體藝術印象</span>
-              </h4>
-              <p id="overallSummary" class="text-xs sm:text-sm text-slate-700 leading-relaxed"></p>
-            </div>
-          </div>
-
-          <!-- 4 Domains Evaluation Cards -->
-          <div class="space-y-5" id="domainsList">
-            <!-- Dynamically injected via JavaScript -->
-          </div>
-
-          <!-- Overall Actionable Advice for HKDSE Exam Preparation -->
-          <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm print-shadow-none break-inside-avoid">
-            <h3 class="serif-title text-lg font-bold text-slate-800 flex items-center space-x-2 border-b border-slate-100 pb-3 mb-4">
-              <i class="ph ph-compass text-indigo-600 text-2xl"></i>
-              <span>針對文憑試試卷一的衝刺備試及改善方向</span>
-            </h3>
-            <div id="preparationAdvice" class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
-              <!-- Dynamically filled -->
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-    </div>
-  </main>
-
-  <!-- Modal: Rubric Details Table -->
-  <div id="rubricModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in duration-200">
-      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <i class="ph ph-table text-indigo-600 text-xl"></i>
-          <h3 class="font-bold text-slate-800 text-base">香港中學文憑試 視覺藝術科卷一 評分準則分佈表</h3>
-        </div>
-        <button onclick="toggleRubricModal()" class="text-slate-400 hover:text-slate-600 rounded-lg p-1">
-          <i class="ph ph-x text-xl"></i>
-        </button>
-      </div>
-      <div class="p-6 overflow-y-auto">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border border-slate-200 border-collapse">
-            <thead>
-              <tr class="bg-slate-100 text-slate-700">
-                <th class="border border-slate-300 p-2.5 w-24">分數 / 描述</th>
-                <th class="border border-slate-300 p-2.5 text-center bg-indigo-50/50" colspan="2">高</th>
-                <th class="border border-slate-300 p-2.5 text-center bg-sky-50/50" colspan="2">中</th>
-                <th class="border border-slate-300 p-2.5 text-center bg-amber-50/50">低</th>
-                <th class="border border-slate-300 p-2.5 text-center bg-slate-200/50">無顯示</th>
-              </tr>
-              <tr class="bg-slate-50 text-slate-600 font-semibold text-center">
-                <th class="border border-slate-300 p-2 text-left">評分準則</th>
-                <th class="border border-slate-300 p-2 w-36">17-20 分</th>
-                <th class="border border-slate-300 p-2 w-36">13-16 分</th>
-                <th class="border border-slate-300 p-2 w-36">9-12 分</th>
-                <th class="border border-slate-300 p-2 w-36">5-8 分</th>
-                <th class="border border-slate-300 p-2 w-28">1-4 分</th>
-                <th class="border border-slate-300 p-2 w-16">0 分</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200 text-slate-700">
-              <tr>
-                <td class="border border-slate-300 p-2.5 font-semibold bg-slate-50">媒材及技法的選擇和運用</td>
-                <td class="border border-slate-300 p-2.5">能選擇及掌握精準而有效的媒材及技法來貫徹主題</td>
-                <td class="border border-slate-300 p-2.5">能掌握相當而有效的媒材及技法來突顯主題</td>
-                <td class="border border-slate-300 p-2.5">能掌握適當的媒材及技法來表現主題</td>
-                <td class="border border-slate-300 p-2.5">能運用與主題相關的媒材及技法</td>
-                <td class="border border-slate-300 p-2.5">未能運用相關的媒材及技法來處理主題</td>
-                <td class="border border-slate-300 p-2.5 text-center" rowspan="4">0</td>
-              </tr>
-              <tr>
-                <td class="border border-slate-300 p-2.5 font-semibold bg-slate-50">視覺元素及設計原理的選擇和運用</td>
-                <td class="border border-slate-300 p-2.5">能選擇及掌握多樣、精準而有效的視覺語言及設計原理來貫徹主題</td>
-                <td class="border border-slate-300 p-2.5">掌握多樣而適當的視覺語言及設計原理來突顯主題</td>
-                <td class="border border-slate-300 p-2.5">能掌握適當的視覺語言及設計原理來表現主題</td>
-                <td class="border border-slate-300 p-2.5">能運用與主題相關的視覺語言及設計原理</td>
-                <td class="border border-slate-300 p-2.5">未能運用相關的視覺語言及設計原理來處理主題</td>
-              </tr>
-              <tr>
-                <td class="border border-slate-300 p-2.5 font-semibold bg-slate-50">創意與想像力</td>
-                <td class="border border-slate-300 p-2.5">能展示個性、獨創性和嶄新的想像</td>
-                <td class="border border-slate-300 p-2.5">能展示個性、原創性和豐富的想像</td>
-                <td class="border border-slate-300 p-2.5">能展示個性、原創性和移情 / 聯想</td>
-                <td class="border border-slate-300 p-2.5">能展示個性或原創性</td>
-                <td class="border border-slate-300 p-2.5">毫無個性或原創性</td>
-              </tr>
-              <tr>
-                <td class="border border-slate-300 p-2.5 font-semibold bg-slate-50">主題傳意</td>
-                <td class="border border-slate-300 p-2.5">能運用統整以切題的藝術形式／符號，表現不同層次的情感或意念</td>
-                <td class="border border-slate-300 p-2.5">能運用多樣而切題、並互相配合的藝術形式／符號表現情感或意念</td>
-                <td class="border border-slate-300 p-2.5">能運用互相配合而切題的藝術形式／符號表現情感或意念</td>
-                <td class="border border-slate-300 p-2.5">能運用互不相干但切題的藝術形式／符號表現情感或意念</td>
-                <td class="border border-slate-300 p-2.5">未能運用任何切題的藝術形式／符號表現情感或意念</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="text-[11px] text-slate-400 mt-3 text-right">資料來源：香港考試及評核局 視覺藝術科試卷一 評核指引與等第規準</p>
-      </div>
-      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
-        <button onclick="toggleRubricModal()" class="px-4 py-2 text-xs font-semibold bg-slate-800 text-white rounded-xl">關閉</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notification Toast -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-white text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg flex items-center space-x-2">
-    <i id="toastIcon" class="ph ph-check-circle text-emerald-400 text-lg"></i>
-    <span id="toastMsg">操作成功</span>
   </div>
 
   <script>
-    // State management
-    let uploadedImages = []; // { dataUrl, base64, mimeType, name }
-    let savedApiKey = localStorage.getItem('dse_art_gemini_key') || '';
-
-    // Initialize API key input
-    document.addEventListener('DOMContentLoaded', () => {
-      if (savedApiKey) {
-        document.getElementById('apiKeyInput').value = savedApiKey;
-      }
-      
-      // Drag and drop listeners
-      const dropzone = document.getElementById('dropzone');
-      ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropzone.classList.add('border-indigo-500', 'bg-indigo-50/50');
-        });
-      });
-      ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropzone.classList.remove('border-indigo-500', 'bg-indigo-50/50');
-        });
-      });
-      dropzone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-      });
-    });
-
-    function toggleKeyVisibility() {
-      const input = document.getElementById('apiKeyInput');
-      const icon = document.getElementById('keyEyeIcon');
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.replace('ph-eye', 'ph-eye-slash');
-      } else {
-        input.type = 'password';
-        icon.classList.replace('ph-eye-slash', 'ph-eye');
-      }
-    }
-
-    function saveApiKey() {
-      const val = document.getElementById('apiKeyInput').value.trim();
-      savedApiKey = val;
-      localStorage.setItem('dse_art_gemini_key', val);
-      showToast('API Key 設定已儲存', 'check');
-    }
-
-    function toggleRubricModal() {
-      const modal = document.getElementById('rubricModal');
-      modal.classList.toggle('hidden');
-      modal.classList.toggle('flex');
-    }
-
-    function showToast(msg, type = 'check') {
-      const toast = document.getElementById('toast');
-      const toastMsg = document.getElementById('toastMsg');
-      const toastIcon = document.getElementById('toastIcon');
-      
-      toastMsg.textContent = msg;
-      if (type === 'error') {
-        toastIcon.className = 'ph ph-warning-circle text-rose-400 text-lg';
-      } else {
-        toastIcon.className = 'ph ph-check-circle text-emerald-400 text-lg';
-      }
-      
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3500);
-    }
-
-    function handleFileSelect(event) {
-      handleFiles(event.target.files);
-    }
-
-    function handleFiles(files) {
-      if (!files || files.length === 0) return;
-
-      Array.from(files).forEach(file => {
-        if (!file.type.startsWith('image/')) {
-          showToast('請上傳有效的圖片檔案格式', 'error');
-          return;
+    // 預設規則引擎評語庫
+    const rubricData = {
+      media: {
+        title: "媒材及技法的選擇和運用",
+        reasons: {
+          "17-20": "對所選媒材之物理特性（如覆蓋力、厚度、流動感）具備精湛的駕馭力，筆觸與肌理層次純熟，完整支撐畫面意境。",
+          "13-16": "有效掌握所用材料的技術要領，手法乾淨俐落，能利用適當的技法特質突顯畫面焦點與氛圍。",
+          "9-12": "具備基本的媒材控制能力，能完成畫面描繪，但技巧層面多依循常規操作，未見鮮明的技法個性。",
+          "5-8": "作品雖具備媒材痕跡，但控制能力較為生硬，偶有顏料混濁或技法處理不勻之處，影響畫面清晰度。",
+          "1-4": "尚未掌握該媒材之基礎處理方式，媒介運用與題材表現有明顯斷層。",
+          "0": "無任何技法展示。"
+        },
+        shortcomings: {
+          "17-20": "整體表現高度成熟，若能進一步在局部質感上創造更多微細層次的變化，將更具震撼力。",
+          "13-16": "部分次要區域的筆觸或細部肌理處理稍嫌均質，未能進一步深化視覺張力。",
+          "9-12": "層次感略顯單薄，對於媒介特有肌理（如乾擦、重疊、留白等）的探索程度有限。",
+          "5-8": "技法與媒介的結合顯得被動，技藝尚未能自然地融入創作概念之中。",
+          "1-4": "媒介掌握不足，以致技術缺陷干擾了觀者對圖像內容的理解。",
+          "0": "未呈現出實質創作。"
+        },
+        suggestions: {
+          "17-20": "可嘗試在作品中引入複合媒介的微實驗，拓展觸感與空間氛圍的邊界。",
+          "13-16": "可針對主體與背景交界處，精細微調邊緣清晰度（Edge Control），加強視覺空間層次。",
+          "9-12": "建議在草圖紙上記錄 2-3 種不同的材質塗抹實驗，並挑選最具衝擊力者加強至主要物體上。",
+          "5-8": "建議加強基礎調色及水分/厚度控制練習，避免畫面局部因過度塗抹而失去透光感與生動度。",
+          "1-4": "宜重新檢視所選媒材之特性，先掌握一種核心媒介之基本工具操作再擴展創作。",
+          "0": "請務必按考卷規定呈交對應作品。"
         }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e.target.result;
-          const base64 = dataUrl.split(',')[1];
-          uploadedImages.push({
-            dataUrl,
-            base64,
-            mimeType: file.type,
-            name: file.name
-          });
-          renderPreviewList();
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function removeImage(index) {
-      uploadedImages.splice(index, 1);
-      renderPreviewList();
-    }
-
-    function renderPreviewList() {
-      const container = document.getElementById('imagePreviewContainer');
-      if (uploadedImages.length === 0) {
-        container.classList.add('hidden');
-        container.innerHTML = '';
-        return;
-      }
-      container.classList.remove('hidden');
-      container.innerHTML = uploadedImages.map((img, i) => `
-        <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-video flex items-center justify-center">
-          <img src="${img.dataUrl}" alt="作品預覽" class="w-full h-full object-cover">
-          <button onclick="removeImage(${i})" class="absolute top-1.5 right-1.5 bg-black/60 hover:bg-rose-600 text-white rounded-full w-6 h-6 flex items-center justify-center transition-colors">
-            <i class="ph ph-trash text-xs"></i>
-          </button>
-          <span class="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm max-w-[85%] truncate">
-            ${img.name}
-          </span>
-        </div>
-      `).join('');
-    }
-
-    // Load rich sample case
-    function loadSampleCase() {
-      document.getElementById('themeInput').value = "浮城 · 記憶的裂縫";
-      document.getElementById('statementInput').value = "創作概念探討城市急速變遷中，舊區老建築與童年回憶逐漸被玻璃帷幕取代的失落感。畫面中央以半透明膠彩與舊報紙撕貼混合技法構建懸浮的唐樓殘骸，背景運用冷色調的幾何垂直線條象徵冰冷的新商業大廈；裂縫中滲出暖黃色的舊霓虹招牌餘溫，營造時空斷裂與孤獨抽離的心理氛圍。";
-      
-      // Use an elegant synthetic artwork canvas image
-      const canvas = document.createElement('canvas');
-      canvas.width = 600;
-      canvas.height = 420;
-      const ctx = canvas.getContext('2d');
-      
-      // Artistic sample rendering
-      const grad = ctx.createLinearGradient(0, 0, 600, 420);
-      grad.addColorStop(0, '#0f172a');
-      grad.addColorStop(0.5, '#1e293b');
-      grad.addColorStop(1, '#334155');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 600, 420);
-      
-      // Geometric buildings
-      ctx.fillStyle = '#475569';
-      for (let i = 0; i < 8; i++) {
-        ctx.fillRect(40 + i * 70, 100 + (i % 3) * 40, 50, 320);
-      }
-      
-      // Gold/warm fissure
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(100, 420);
-      ctx.lineTo(220, 260);
-      ctx.lineTo(310, 200);
-      ctx.lineTo(390, 120);
-      ctx.lineTo(500, 0);
-      ctx.stroke();
-
-      // Floating tenement silhouette
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = 'bold 20px serif';
-      ctx.fillText('【示範作品圖像：複合媒材唐樓立面與光裂】', 120, 210);
-
-      const sampleUrl = canvas.toDataURL('image/png');
-      uploadedImages = [{
-        dataUrl: sampleUrl,
-        base64: sampleUrl.split(',')[1],
-        mimeType: 'image/png',
-        name: '浮城_記憶的裂縫_作品正圖.png'
-      }];
-      renderPreviewList();
-      showToast('已載入示範題目、創作陳述與作品相片');
-    }
-
-    // Main evaluation logic
-    async function evaluateArtwork() {
-      const theme = document.getElementById('themeInput').value.trim();
-      const statement = document.getElementById('statementInput').value.trim();
-      const apiKey = document.getElementById('apiKeyInput').value.trim() || savedApiKey;
-
-      if (!theme) {
-        showToast('請填寫創作題目 / 主題', 'error');
-        document.getElementById('themeInput').focus();
-        return;
-      }
-
-      if (uploadedImages.length === 0) {
-        showToast('請上傳至少一張作品相片或草圖', 'error');
-        return;
-      }
-
-      // UI updates
-      document.getElementById('emptyState').classList.add('hidden');
-      document.getElementById('reportContainer').classList.add('hidden');
-      document.getElementById('loadingState').classList.remove('hidden');
-      document.getElementById('submitBtn').disabled = true;
-
-      try {
-        const assessmentResult = await callGeminiEvaluation(theme, statement, uploadedImages, apiKey);
-        renderReport(theme, statement, assessmentResult);
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('reportContainer').classList.remove('hidden');
-        showToast('作品評審完成！');
-      } catch (err) {
-        console.error(err);
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('emptyState').classList.remove('hidden');
-        showToast('評審生成出錯，請檢查 API Key 或網路連線: ' + (err.message || '未知錯誤'), 'error');
-      } finally {
-        document.getElementById('submitBtn').disabled = false;
-      }
-    }
-
-    async function callGeminiEvaluation(theme, statement, images, apiKey) {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
-      const systemInstruction = `
-你是一位資深香港中學文憑試（HKDSE）視覺藝術科卷一（視覺形式表達主題）的資深評卷主考員（Marker / Chief Examiner）。
-你需要嚴格依據香港考試及評核局（HKEAA）公佈之試卷一評分準則量表，對考生提交的視覺藝術平面作品及創作簡介進行全面、專業且具建設性的質性評審。
-
-【評分重要規則（違反將視為失誤）】：
-1. 嚴格對照以下四大核心評審範疇進行評分（每項最高滿分 20 分）：
-   - 範疇一：媒材及技法的選擇和運用
-   - 範疇二：視覺元素及設計原理的選擇和運用
-   - 範疇三：創意與想像力
-   - 範疇四：主題傳意
-2. 【核心規範】：為每項評分時，「只顯示分數範圍」（必須嚴格從以下等級字串中選取一個）：
-   - "17-20分"（高等表現）
-   - "13-16分"（中高表現）
-   - "9-12分"（中等表現）
-   - "5-8分"（中低表現）
-   - "1-4分"（低等表現）
-   - "0分"（無顯示）
-   【絕對不可給出具體單一數字（如 15分），絕對不可計算或顯示總分！】
-3. 評分表標準描述對照：
-   - 範疇一（媒材及技法）：
-     * 17-20: 能選擇及掌握精準而有效的媒材及技法來貫徹主題
-     * 13-16: 能掌握相當而有效的媒材及技法來突顯主題
-     * 9-12: 能掌握適當的媒材及技法來表現主題
-     * 5-8: 能運用與主題相關的媒材及技法
-     * 1-4: 未能運用相關的媒材及技法來處理主題
-   - 範疇二（視覺元素及設計原理）：
-     * 17-20: 能選擇及掌握多樣、精準而有效的視覺語言及設計原理來貫徹主題
-     * 13-16: 掌握多樣而適當的視覺語言及設計原理來突顯主題
-     * 9-12: 能掌握適當的視覺語言及設計原理來表現主題
-     * 5-8: 能運用與主題相關的視覺語言及設計原理
-     * 1-4: 未能運用相關的視覺語言及設計原理來處理主題
-   - 範疇三（創意與想像力）：
-     * 17-20: 能展示個性、獨創性和嶄新的想像
-     * 13-16: 能展示個性、原創性和豐富的想像
-     * 9-12: 能展示個性、原創性和移情／聯想
-     * 5-8: 能展示個性或原創性
-     * 1-4: 毫無個性或原創性
-   - 範疇四（主題傳意）：
-     * 17-20: 能運用統整以切題的藝術形式／符號，表現不同層次的情感或意念
-     * 13-16: 能運用多樣而切題、並互相配合的藝術形式／符號表現情感或意念
-     * 9-12: 能運用互相配合而切題的藝術形式／符號表現情感或意念
-     * 5-8: 能運用互不相干但切題的藝術形式／符號表現情感或意念
-     * 1-4: 未能運用任何切題的藝術形式／符號表現情感或意念
-
-4. 每個範疇必須提供：
-   - score_range: 分數範圍字串（例如 "13-16分"）
-   - level_tier: 等級別，取值為 "高"、"中"、"低" 或 "無顯示"
-   - rubric_quote: 評分表對應之官方標準描述字句
-   - reason_for_score: 得分原因（具體引用作品中的筆觸、色彩、肌理、構圖、意象等視覺證據進行賞析）
-   - shortcomings: 不足之處（分析為何未能踏入更高的下一階層，如 17-20 分）
-   - suggestions: 具體改善意見（提供可行的技法調整、視覺語言修改、意念昇華建議，供考生備試）
-
-5. 總結提供：
-   - overall_critique: 整體藝術印象與綜合評價（約 150-200 字）
-   - exam_preparation_strategies: 3-4 點針對 DSE 卷一臨場繪畫與意念發展的具體備試建議。
-
-請必須以合法、純淨的 JSON 格式回傳，不得包裹非 JSON 的說明文字。
-`;
-
-      const promptText = `
-考生題目：${theme}
-創作簡介及意念說明：${statement || '考生未提供文字說明，請純粹根據視覺作品圖像及題目進行評審。'}
-
-請審視附上的考生作品圖片，以 DSE 考卷一標準產出結構化評分 JSON。
-`;
-
-      // Build parts payload
-      const parts = [{ text: promptText }];
-      images.forEach(img => {
-        parts.push({
-          inlineData: {
-            mimeType: img.mimeType,
-            data: img.base64
-          }
-        });
-      });
-
-      const payload = {
-        contents: [{ role: 'user', parts: parts }],
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "OBJECT",
-            properties: {
-              overall_critique: { type: "STRING" },
-              domains: {
-                type: "ARRAY",
-                items: {
-                  type: "OBJECT",
-                  properties: {
-                    domain_name: { type: "STRING" },
-                    score_range: { type: "STRING" },
-                    level_tier: { type: "STRING" },
-                    rubric_quote: { type: "STRING" },
-                    reason_for_score: { type: "STRING" },
-                    shortcomings: { type: "STRING" },
-                    suggestions: { type: "STRING" }
-                  },
-                  required: ["domain_name", "score_range", "level_tier", "rubric_quote", "reason_for_score", "shortcomings", "suggestions"]
-                }
-              },
-              exam_preparation_strategies: {
-                type: "ARRAY",
-                items: { type: "STRING" }
-              }
-            },
-            required: ["overall_critique", "domains", "exam_preparation_strategies"]
-          }
+      },
+      elements: {
+        title: "視覺元素及設計原理的選擇和運用",
+        reasons: {
+          "17-20": "敏銳且精確地調配色彩對比、空間透視與構圖律動，成功引導觀者視線並完全服務於主題情境。",
+          "13-16": "構圖平穩且具層次，色調冷暖佈局得宜，視覺中心明確且各元素具良好平衡感。",
+          "9-12": "能依循基礎設計原理安排畫面元素，畫面比例合宜，但佈局略顯制式或可預期。",
+          "5-8": "畫面元素分佈較為分散或繁雜，視覺重心不夠聚焦，使畫面結構略為失衡。",
+          "1-4": "視覺語言混亂，缺乏明確之空間結構或色彩關係，削弱了圖像傳達力。",
+          "0": "未能體現相關視覺原理。"
+        },
+        shortcomings: {
+          "17-20": "整體統整性極高，若能適度留白以營造更多畫面呼吸感，畫面將更具餘韻。",
+          "13-16": "色彩對比或明度階梯（Value Scale）可以更大膽，目前部分層次有些微灰調收斂。",
+          "9-12": "構圖較為仰賴對稱或居中安排，視角與透視關係略顯單一，缺乏打破框架的視覺張力。",
+          "5-8": "未充分考量「主次分明」，背景與前景之比重相互爭奪焦點。",
+          "1-4": "缺乏對色彩、線條與空間之基本統籌，畫面顯得零散無序。",
+          "0": "未展示視覺設計組織。"
+        },
+        suggestions: {
+          "17-20": "可嘗試引入更有張力的視角（如超俯視、極限仰角或微觀剪裁）來昇華構圖。",
+          "13-16": "試著在主體區域增強光影對比階梯（最亮與最暗），將視線焦點鎖定得更強烈。",
+          "9-12": "建議在白書紙上繪製 3 幅不同視角的縮圖（Thumbnail sketches），跳脫直覺式構圖。",
+          "5-8": "釐清畫面的「視覺第一印象點」，精簡並刪除對主題無實質助益的瑣碎元素。",
+          "1-4": "建議先由黑白素描稿規劃出三大塊明度分配（黑、灰、白），建立畫面秩序。",
+          "0": "請按照視覺元素要求組織畫面。"
         }
-      };
-
-      // Exponential backoff fetch
-      let delay = 1000;
-      let lastErr = null;
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          
-          if (!res.ok) {
-            const errData = await res.json().catch(() => ({}));
-            throw new Error(errData?.error?.message || `HTTP ${res.status}`);
-          }
-          
-          const result = await res.json();
-          const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (!rawText) throw new Error('API 回傳內容為空');
-
-          return JSON.parse(rawText);
-        } catch (e) {
-          lastErr = e;
-          if (attempt < 2) {
-            await new Promise(r => setTimeout(r, delay));
-            delay *= 2;
-          }
+      },
+      creativity: {
+        title: "創意與想像力",
+        reasons: {
+          "17-20": "展現高度獨創性與極富哲思的隱喻視角，跳脫既定陳腔濫調，呈現前所未見的個人化世界觀。",
+          "13-16": "構思新穎生動，能將不同的事物意象進行有趣的移情或並置聯想，想像力豐富。",
+          "9-12": "具備個人解讀視角，能對題目作合乎邏輯的聯想，但聯想層次尚在多數人的直觀預期內。",
+          "5-8": "呈現之點子偏向直接字面翻譯或刻板符號，個人個性與創新元素稍顯薄弱。",
+          "1-4": "幾乎全為公式化或概念拼貼，未能感受任何原創思維與想像力投入。",
+          "0": "無顯示個性或原創性。"
+        },
+        shortcomings: {
+          "17-20": "觀念強烈，若能讓符號的隱喻在草圖書紙中交代得更為深邃，將更有說服力。",
+          "13-16": "部分象徵意象仍略帶常見圖像範本的影子，個人原創符號的提煉度可再加深。",
+          "9-12": "意象轉化較為直接（如講到悲傷就畫眼淚），未深入挖掘更深層的精神投射。",
+          "5-8": "創作概念主要停留於表層字面解釋，缺乏視覺隱喻的轉換層次。",
+          "1-4": "構思過於平板或直接仿作，未見考生自我的思考觀點。",
+          "0": "無展現原創性。"
+        },
+        suggestions: {
+          "17-20": "可在草圖紙中加入觀念的演變過程筆記，展現個人概念從萌芽到蛻變的脈絡。",
+          "13-16": "嘗試使用「非慣用邏輯聯想」（如矛盾並置、超現實比例放大）來取代常態符號。",
+          "9-12": "在白書紙上利用「意念網絡（Mind Map）」進行至少三層延伸，避開第一時間想到的三個符號。",
+          "5-8": "多觀察日常生活細節，嘗試將個人真實感受或獨特記憶注入畫作中。",
+          "1-4": "多閱讀不同流派的藝術家作品，學習如何將抽象觀念轉化為具象符號。",
+          "0": "請根據題目展開思考創作。"
+        }
+      },
+      communication: {
+        title: "主題傳意",
+        reasons: {
+          "17-20": "藝術形式、象徵符號與情感基調完美融合為一，多層次地喚起觀者的心理共鳴與反思。",
+          "13-16": "符號多樣且切合題意，彼此之間呼應得當，能清晰傳遞出考生的感受與核心意念。",
+          "9-12": "所用圖像符號能有效配合題目，題意明確清晰，但情感層次較為單一平鋪。",
+          "5-8": "符號雖與題目有一定關聯，但元素之間各自為政，未能形成合力以突顯情感意念。",
+          "1-4": "未能運用適當的符號闡釋主題，觀者難以從畫面接收到明確的思維訊息。",
+          "0": "完全偏離主題。"
+        },
+        shortcomings: {
+          "17-20": "已具備極高的感染力，近乎無可挑剔。",
+          "13-16": "情感鋪陳若能再加強一些張弛節奏（如對立情感的拉扯），傳意效果會更深層。",
+          "9-12": "意念表達以敘事居多，缺少直擊心靈的情感共鳴層次。",
+          "5-8": "畫面元素之間的關聯性鬆散，削弱了訊息的傳達力度。",
+          "1-4": "缺乏視覺焦點或文不對題，無法有效解構主題。",
+          "0": "無題意表現。"
+        },
+        suggestions: {
+          "17-20": "可善用白書紙的文字陳述，與畫面形成互文性（Intertextuality）的觀念呼應。",
+          "13-16": "在主要符號與背景氛圍之間加強情感關聯，使色彩與造型皆成為傳意的載體。",
+          "9-12": "思考「這個主題對我個人有何獨特意義」，將個人的情緒切片融入畫面中。",
+          "5-8": "重新審視每個入畫物件的必要性，刪減無關物件，聚焦於單一強烈的核心意念。",
+          "1-4": "仔細研讀考卷題目的關鍵字，重新定義畫面主角與主題之因果關係。",
+          "0": "請務必審慎審題。"
         }
       }
-      throw lastErr;
-    }
+    };
 
-    function renderReport(theme, statement, data) {
-      document.getElementById('reportTheme').textContent = theme;
-      document.getElementById('reportDate').textContent = new Date().toLocaleDateString('zh-HK', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+    function generateReport() {
+      const topic = document.getElementById('topicInput').value.trim() || '未指定主題';
+      const medium = document.getElementById('mediumInput').value.trim() || '常規平面媒材';
 
-      // Render thumbnails
-      const thumbsContainer = document.getElementById('reportThumbnails');
-      thumbsContainer.innerHTML = uploadedImages.map(img => `
-        <div class="h-20 w-28 rounded-lg overflow-hidden border border-slate-200 shadow-xs">
-          <img src="${img.dataUrl}" class="w-full h-full object-cover">
-        </div>
-      `).join('');
+      document.getElementById('reportTopic').innerText = topic;
+      document.getElementById('reportMedium').innerText = medium;
 
-      // Overall critique
-      document.getElementById('overallSummary').textContent = data.overall_critique || '無整體評語。';
+      const mediaScore = document.getElementById('criterionMedia').value;
+      const elemScore = document.getElementById('criterionElements').value;
+      const creatScore = document.getElementById('criterionCreativity').value;
+      const commScore = document.getElementById('criterionCommunication').value;
 
-      // Render 4 domains
-      const domainsList = document.getElementById('domainsList');
-      domainsList.innerHTML = '';
+      const criteriaKeys = [
+        { key: 'media', score: mediaScore },
+        { key: 'elements', score: elemScore },
+        { key: 'creativity', score: creatScore },
+        { key: 'communication', score: commScore }
+      ];
 
-      const tierColors = {
-        '高': { bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', badge: 'bg-emerald-600 text-white' },
-        '中': { bg: 'bg-sky-50 text-sky-800 border-sky-200', badge: 'bg-sky-600 text-white' },
-        '低': { bg: 'bg-amber-50 text-amber-800 border-amber-200', badge: 'bg-amber-600 text-white' },
-        '無顯示': { bg: 'bg-slate-100 text-slate-800 border-slate-200', badge: 'bg-slate-600 text-white' }
-      };
+      const container = document.getElementById('criteriaCards');
+      container.innerHTML = '';
 
-      data.domains.forEach((item, index) => {
-        const tier = item.level_tier || '中';
-        const style = tierColors[tier] || tierColors['中'];
+      criteriaKeys.forEach(item => {
+        const cat = rubricData[item.key];
+        const card = document.createElement('div');
+        card.className = "border border-slate-200 rounded-lg p-5 bg-slate-50/50 space-y-3";
 
-        const domainCard = document.createElement('div');
-        domainCard.className = "bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 shadow-sm print-shadow-none break-inside-avoid space-y-4";
-        
-        domainCard.innerHTML = `
-          <!-- Domain Header -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-            <div class="flex items-center space-x-2.5">
-              <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
-                0${index + 1}
-              </span>
-              <h3 class="font-bold text-base text-slate-900">${escapeHtml(item.domain_name)}</h3>
-            </div>
-            <!-- Range Badge: ONLY shows range, no exact score, no total score -->
-            <div class="flex items-center space-x-2">
-              <span class="text-xs text-slate-500 font-medium">表現等第：</span>
-              <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl text-xs font-bold ${style.bg} border">
-                <span class="w-2 h-2 rounded-full ${style.badge}"></span>
-                <span>${escapeHtml(item.score_range)}</span>
-                <span class="text-[11px] opacity-75">(${escapeHtml(item.level_tier)})</span>
-              </div>
-            </div>
+        card.innerHTML = `
+          <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+            <h3 class="font-bold text-slate-800">${cat.title}</h3>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              等級區間：${item.score} 分
+            </span>
           </div>
-
-          <!-- Official Rubric Match Quote -->
-          <div class="bg-slate-50 border-l-4 border-indigo-500 px-3.5 py-2.5 rounded-r-xl text-xs text-slate-700">
-            <span class="font-semibold text-slate-900">對應量表能力描述：</span>
-            <span>「${escapeHtml(item.rubric_quote)}」</span>
-          </div>
-
-          <!-- 3 Columns: Reason, Shortcomings, Suggestions -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-            
-            <!-- Reason for score -->
-            <div class="bg-emerald-50/40 border border-emerald-100/80 rounded-2xl p-4 flex flex-col justify-between">
-              <div>
-                <h4 class="text-xs font-bold text-emerald-900 flex items-center space-x-1.5 mb-2">
-                  <i class="ph ph-check-circle text-emerald-600 text-base"></i>
-                  <span>得分原因 (視覺優點)</span>
-                </h4>
-                <p class="text-xs text-slate-700 leading-relaxed">${escapeHtml(item.reason_for_score)}</p>
-              </div>
-            </div>
-
-            <!-- Shortcomings -->
-            <div class="bg-amber-50/40 border border-amber-100/80 rounded-2xl p-4 flex flex-col justify-between">
-              <div>
-                <h4 class="text-xs font-bold text-amber-900 flex items-center space-x-1.5 mb-2">
-                  <i class="ph ph-warning-circle text-amber-600 text-base"></i>
-                  <span>不足之處 (扣分點/未達更高層次原因)</span>
-                </h4>
-                <p class="text-xs text-slate-700 leading-relaxed">${escapeHtml(item.shortcomings)}</p>
-              </div>
-            </div>
-
-            <!-- Actionable Advice -->
-            <div class="bg-indigo-50/40 border border-indigo-100/80 rounded-2xl p-4 flex flex-col justify-between">
-              <div>
-                <h4 class="text-xs font-bold text-indigo-950 flex items-center space-x-1.5 mb-2">
-                  <i class="ph ph-lightbulb text-indigo-600 text-base"></i>
-                  <span>改善意見與精進方法</span>
-                </h4>
-                <p class="text-xs text-slate-700 leading-relaxed">${escapeHtml(item.suggestions)}</p>
-              </div>
-            </div>
-
-          </div>
-        `;
-
-        domainsList.appendChild(domainCard);
-      });
-
-      // Preparation advice list
-      const adviceContainer = document.getElementById('preparationAdvice');
-      adviceContainer.innerHTML = '';
-      if (data.exam_preparation_strategies && data.exam_preparation_strategies.length > 0) {
-        data.exam_preparation_strategies.forEach(strategy => {
-          const item = document.createElement('div');
-          item.className = "flex items-start space-x-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100";
-          item.innerHTML = `
-            <i class="ph ph-arrow-circle-right text-indigo-600 text-base mt-0.5 flex-shrink-0"></i>
-            <span class="text-xs sm:text-sm text-slate-700">${escapeHtml(strategy)}</span>
-          `;
-          adviceContainer.appendChild(item);
-        });
-      } else {
-        adviceContainer.innerHTML = '<p class="text-xs text-slate-500">持續強化畫面白書紙（草圖與構思）之對應解說，並加深主體與背景之空間層次關係。</p>';
-      }
-
-      // Scroll smoothly to report
-      document.getElementById('reportContainer').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function escapeHtml(string) {
-      if (!string) return '';
-      return String(string)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-  </script>
-</body>
-</html>
